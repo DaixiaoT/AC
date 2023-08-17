@@ -3,7 +3,17 @@
 #include "ac_include.h"
 
 
+class Fan{
+    public:
 
+
+
+        U16 getSpeed();
+
+    private:
+        U16 speed;
+
+};
 
 
 

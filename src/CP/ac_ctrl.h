@@ -1,14 +1,12 @@
 #ifndef __AC_CRTL_H__
 #define __AC_CRTL_H__
-
 #include "ac_include.h"
-
-
-
-
+#include "ac_set.h"
 
 class ACControl
 {
+    public:
+        ACSet set1;
 
 };
 

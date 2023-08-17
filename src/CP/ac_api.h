@@ -1,7 +1,7 @@
 #ifndef _AC_API_H_
 #define _AC_API_H_
 #include "ac_include.h"
-
+#include "m_da.h"
 void ac_init();
 void ac_control(U32 run_sec);
 

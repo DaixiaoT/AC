@@ -7,7 +7,8 @@
 class Compressor
 {
 public:
-	
+	S16 HighPressureValue;//高压传感器值
+	S16 LowPressureValue;//低压传感器值
 
 };
 

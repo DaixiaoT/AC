@@ -3,11 +3,6 @@
 
 
 #include "sys_api.h"
-#include "ac_config.h"
-#include "ac_dio.h"
-
-#include "ADIO.h"
-#include "TimeRecord.h"
 
 
 
