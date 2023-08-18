@@ -13,6 +13,9 @@ void ac_control(U32 run_sec)
     static U32 s_now_time = 0;
     s_now_time = sys_time(); // 记录时间
     Up_my_sensor();
+    RS485_TASK();
+    
+
 }
 
 #define EndianSwitch(word) (((word >> 8) & 0xff) | ((word & 0xff) << 8))
@@ -23,17 +26,17 @@ void Up_my_sensor()
     g_car.set1.Compressor_1.HighPressureValue = ReadHighPressureValue_1();
     g_car.set1.Compressor_2.HighPressureValue = ReadHighPressureValue_2();
 
-    if (!valve[0].valve1_timeout()) // 否则就报错multiple definition
+    if (!valve[0].Timeout()) // 否则就报错multiple definition
     {
-        g_car.set1.Compressor_1.LowPressureValue = EndianSwitch(g_car.set1.valve1.valverx_data.pressure);
+        g_car.set1.Compressor_1.LowPressureValue = EndianSwitch(g_car.set1.valve1.valve_read_data.Pressure);
     }
     else
     {
         g_car.set1.Compressor_1.LowPressureValue = -100;
     }
-    if (!valve[0].valve1_timeout())
+    if (!valve[1].Timeout())
     {
-        g_car.set1.Compressor_2.LowPressureValue = EndianSwitch(g_car.set1.valve2.valverx_data.pressure);
+        g_car.set1.Compressor_2.LowPressureValue = EndianSwitch(g_car.set1.valve2.valve_read_data.Pressure);
     }
     else
     {

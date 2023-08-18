@@ -56,7 +56,7 @@ BOOL lldp_recv(TLV_LLDP_APP *tlv);
 //计算本地IP，n默认取LLLDP数据里第1个IP地址，目前数据里只有一个IP，n默认是0
 U32 calc_loack_ip(TLV_LLDP_APP *tlv,int n=0);
 //重新设置LLDP数据
-void lldp_reset_data();
+void lldp_reset_valueta();
 #endif//__LLDP_H__
 
 

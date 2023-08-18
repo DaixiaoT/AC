@@ -9,7 +9,7 @@
 
 class ACSet {
     public:
-        ValvModule_t valve1, valve2;
+        Valve_Module valve1, valve2;
         FRESH_AIR_DAMP FreshAirDamp;    //新风门
         Fan Ventilator_1, Ventilator_2; //通风机
         Compressor Compressor_1, Compressor_2;//压缩机

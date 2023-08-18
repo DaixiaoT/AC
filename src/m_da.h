@@ -13,15 +13,15 @@ class DA_CTRL{
         DA_CTRL(){
 
         };
-        BOOL set_DA(u16 da);
-        DA_TYPE get_value(){
-            return value;
-        }
+        BOOL set_value(u16 da);
+        DA_TYPE get_value();
 
 
 
     private:
         DA_TYPE value;
+        DA_TYPE max_value;
+        DA_TYPE min_value;
 
 };
 extern DA_CTRL ctrl_DA[DA_NUM];//定义电压输出全局变量
