@@ -2,7 +2,7 @@
 #define __LVF_TYPES_H__
 
 typedef U8    INT8U;
-typedef U16   INT16U;
+typedef U16   U16;
 typedef U32   INT32U;
 typedef I8  INT8S;
 typedef I16 INT16S;

@@ -5,28 +5,29 @@
 
 void ac_init()
 {
+    LOG_PRINT("Enter ac_init()\n");
 }
 
 void ac_control(U32 run_sec)
 {
     LOG_PRINT("system on.........\n");
     static U32 s_now_time = 0;
-    s_now_time = sys_time(); // è®°å½•æ—¶é—´
+    s_now_time = sys_time(); // ¼ÇÂ¼Ê±¼ä
     Up_my_sensor();
     RS485_TASK();
     
 
 }
 
-#define EndianSwitch(word) (((word >> 8) & 0xff) | ((word & 0xff) << 8))
+
 void Up_my_sensor()
 {
-    DA_Update(g_car.set1.Ventilator_1.getSpeed(), g_car.set1.Ventilator_2.getSpeed()); // æ•°å­—é‡è½¬æ¨¡æ‹Ÿé‡
+    DA_Update(g_car.set1.Ventilator_1.getSpeed(), g_car.set1.Ventilator_2.getSpeed()); // Êý×ÖÁ¿×ªÄ£ÄâÁ¿
     g_car.set1.FreshAirDamp.resistor_feedback = ReadFreshAirDampFeedback();
     g_car.set1.Compressor_1.HighPressureValue = ReadHighPressureValue_1();
     g_car.set1.Compressor_2.HighPressureValue = ReadHighPressureValue_2();
 
-    if (!valve[0].Timeout()) // å¦åˆ™å°±æŠ¥é”™multiple definition
+    if (!valve[0].Timeout()) // ·ñÔò¾Í±¨´ímultiple definition
     {
         g_car.set1.Compressor_1.LowPressureValue = EndianSwitch(g_car.set1.valve1.valve_read_data.Pressure);
     }

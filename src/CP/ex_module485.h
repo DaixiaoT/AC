@@ -5,9 +5,6 @@
 #define VALVE_NUM (2)
 #define FREQ_NUM (2)
 
-
-
-
 typedef struct
 {
 	U8 MB_ADDR;	 // 从机地址码
@@ -18,17 +15,21 @@ typedef struct
 	U8 CRC16_L;
 } ReadCmd; // 读命令
 
-/*--------------------------------------------------Valve----------------------------------------------*/
-
-class Valve
+// 缓存区结构体
+typedef struct
 {
+	U16 Num;
+	U8 data[256];
+} SLINK_UART;
 
-public:
-	U32 time_out_seconds;
-	BOOL Timeout();
+typedef struct 
+{
+	 CommObj *com;
+	 U32 tx_tick;
+	 U32 rx_tick;
+}RS485_Module;
 
-private:
-};
+/*--------------------------------------------------Valve----------------------------------------------*/
 
 typedef struct
 {
@@ -65,13 +66,43 @@ typedef struct
 	Valve_ReadData valve_read_data;
 } Valve_Module;
 
+class Valve
+{
+
+public:
+	Valve()
+	{
+		tx_tick = 0;
+		rx_tick = 0;
+		Add = 1;
+		com = &comm_uart4;
+	}
+	// void config(const char* name1,U8 add,RS485_Module*cfg){		
+	// 	name = name1;
+	// 	com=cfg->com;
+	// 	Add=add;
+	// 	tx_tick=cfg->tx_tick;
+	// 	rx_tick=cfg->rx_tick;	
+	// }
+	U8 Add;
+	const char* name;
+	CommObj *com;
+	U32 tx_tick;
+	U32 rx_tick;
+	BOOL Timeout();
+	U8 WriteReadCmd(ReadCmd *data);	  // 发送读命令
+	U8 WriteSuperheatCmd(Valve_WriteSuperheat *data); // 发送写过热度命令
+	U8 ReadData(Valve_ReadData *data);		  // 读取膨胀阀数据
+
+private:
+	
+	U32 time_out_seconds;
+	SLINK_UART valve_uart_receive;
+};
+
 /*--------------------------------------------------Valve----------------------------------------------*/
 
 /*--------------------------------------------------Freqency----------------------------------------------*/
-
-class Freq
-{
-};
 
 typedef struct
 {
@@ -121,14 +152,53 @@ typedef struct
 	Freq_ReadData Freqrx_data;
 } Freq_Module;
 
+class Freq
+{
+public:
+	// BOOL Timeout();
+	Freq()
+	{
+		tx_tick = 0;
+		rx_tick = 0;
+		Add = 1;
+		time_out_seconds = 0;
+		com = &comm_uart4;
+	}
+	// void config(const char* name1,U8 add,RS485_Module*cfg){		
+	// 	name = name1;
+	// 	com=cfg->com;
+	// 	Add=add;
+	// 	tx_tick=cfg->tx_tick;
+	// 	rx_tick=cfg->rx_tick;	
+	// 	}
+	U8 Add;
+	const char* name;
+	CommObj *com;
+	U32 tx_tick;
+	U32 rx_tick;
+	BOOL Timeout();
+	U8 WriteReadCmd(ReadCmd *data);				   // 发送读命令
+	U8 WriteStateCmd(Freq_WriteWorkState *data);	   // 发送写状态命令
+	U8 WriteFrequencyCmd(Freq_WriteFrequency *data); // 发送写频率命令
+	U8 ReadData(Freq_ReadData *data);				   // 读取变频器数据
+	SLINK_UART freq_uart_receive;					   // 缓存区变量
+
+private:
+	
+	U32 time_out_seconds;
+};
+
 /*--------------------------------------------------Freqency----------------------------------------------*/
+
+
 
 extern Valve valve[VALVE_NUM];
 extern Freq freq[FREQ_NUM];
 
 
+void module_init();
 void RS485_TASK();
 
-
+static BOOL wait_en();
 
 #endif //__EX_MODULE485_H__
