@@ -5,9 +5,13 @@
 
 class ACControl
 {
-    public:
-        ACSet set1;
+public:
+    ACSet set1;
 
+public:
+    void Init();
+    void ProcessMode();
+    BOOL SelfTestMode();
 };
 
 extern ACControl g_car;

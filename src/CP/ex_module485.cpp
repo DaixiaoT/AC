@@ -306,7 +306,7 @@ BOOL Freq::Timeout()
 
 U8 Freq::WriteReadCmd(ReadCmd *data)
 {
-    LOG_PRINT("Enter Freq::WriteReadCmd(),Add:%d\n", Add);
+    // LOG_PRINT("Enter Freq::WriteReadCmd(),Add:%d\n", Add);
     data->MB_ADDR = Add;
     data->FUNC = 0x03;
     data->REG_ADD = EndianSwitch(0x0000);
@@ -322,7 +322,7 @@ U8 Freq::WriteReadCmd(ReadCmd *data)
 
 U8 Freq::WriteStateCmd(Freq_WriteWorkState *data)
 {
-    LOG_PRINT("Enter Freq::WriteStateCmd()\n");
+    // LOG_PRINT("Enter Freq::WriteStateCmd()\n");
     data->StartCode = Add;
     data->Func = 0x06;
     data->REG_ADD = EndianSwitch(0x2001);
@@ -338,7 +338,7 @@ U8 Freq::WriteStateCmd(Freq_WriteWorkState *data)
 
 U8 Freq::WriteFrequencyCmd(Freq_WriteFrequency *data)
 {
-    LOG_PRINT("Enter Freq::WriteFrequencyCmd()\n");
+    // LOG_PRINT("Enter Freq::WriteFrequencyCmd()\n");
     data->StartCode = Add;
     data->Func = 0x06;
     data->REG_ADD = EndianSwitch(0x2001);
@@ -353,7 +353,7 @@ U8 Freq::WriteFrequencyCmd(Freq_WriteFrequency *data)
 
 U8 Freq::ReadData(Freq_ReadData *data)
 {
-    LOG_PRINT("Enter Freq::ReadData()\n");
+    // LOG_PRINT("Enter Freq::ReadData()\n");
     U16 crc;
     mem_set((U8 *)freq_uart_receive.data, 0, 256);
     freq_uart_receive.Num = 0;
@@ -387,7 +387,7 @@ BOOL Valve::Timeout()
 
 U8 Valve::WriteReadCmd(ReadCmd *data)
 {
-    LOG_PRINT("Enter Valve::WriteReadCmd()\n");
+    // LOG_PRINT("Enter Valve::WriteReadCmd()\n");
     data->MB_ADDR = Add;
     data->FUNC = 0x03;
     data->REG_ADD = EndianSwitch(0x64);
@@ -403,7 +403,7 @@ U8 Valve::WriteReadCmd(ReadCmd *data)
 
 U8 Valve::WriteSuperheatCmd(Valve_WriteSuperheat *data)
 {
-    LOG_PRINT("Enter Valve::WriteSuperheatCmd()\n");
+    // LOG_PRINT("Enter Valve::WriteSuperheatCmd()\n");
     data->StartCode = Add;
     data->Func = 0x06;
     data->REG_ADD = EndianSwitch(0x64);
@@ -418,7 +418,7 @@ U8 Valve::WriteSuperheatCmd(Valve_WriteSuperheat *data)
 
 U8 Valve::ReadData(Valve_ReadData *data)
 {
-    LOG_PRINT("Enter Valve::ReadData()\n");
+    // LOG_PRINT("Enter Valve::ReadData()\n");
     U16 crc;
     mem_set((U8 *)valve_uart_receive.data, 0, 256);
     valve_uart_receive.Num = 0;
@@ -440,6 +440,8 @@ U8 Valve::ReadData(Valve_ReadData *data)
     }
     return 4;
 }
+
+
 
 /*--------------------------------------------------Valve----------------------------------------------*/
 
@@ -486,7 +488,7 @@ static BOOL wait_en()
 
 void module_init()
 {
-    LOG_PRINT("Enter module_init()\n");
+    // LOG_PRINT("Enter module_init()\n");
     for (int i = 0; i < FREQ_NUM; i++)
     {
         freq[i].Add = 51 + i;
@@ -514,7 +516,7 @@ void RS485_TASK()
     static int s_step = enum_Freq_WriteReadCmd;
     static int s_device_num = 0;
     U8 temp = 0;
-    LOG_PRINT("Enter RS485_TASK() s_step:%d\n", s_step);
+    // LOG_PRINT("Enter RS485_TASK() s_step:%d\n", s_step);
     switch (s_step)
     {
     case enum_Freq_WriteReadCmd:
@@ -528,7 +530,7 @@ void RS485_TASK()
     case enum_Freq_ReadData:
         if (wait_en() == FALSE)
             return;
-        LOG_PRINT("Freq_ReadData,temp=%d\n", temp);
+        // LOG_PRINT("Freq_ReadData,temp=%d\n", temp);
         temp = freq[s_device_num].ReadData(&s_freq[s_device_num]->Freqrx_data);
 
         if (temp == 3)
@@ -567,7 +569,7 @@ void RS485_TASK()
         if (wait_en() == FALSE)
             return;
         temp = valve[s_device_num].ReadData(&s_valve[s_device_num]->valve_read_data);
-        LOG_PRINT("Valve_ReadData,temp=%d\n", temp);
+        // LOG_PRINT("Valve_ReadData,temp=%d\n", temp);
 
         if (temp == 3)
         {

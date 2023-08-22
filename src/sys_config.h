@@ -149,7 +149,7 @@ void UART6_TX_END();
 
 #define DI_NUM		(38)
 #define DO_NUM		(20)
-#define	AI_NUM		(14)
+#define	AI_NUM		(1)
 
 #define DI_BYTES	((DI_NUM+7)>>3)
 #define DO_BYTES	((DO_NUM+7)>>3)

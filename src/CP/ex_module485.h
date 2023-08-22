@@ -93,7 +93,7 @@ public:
 	U8 WriteReadCmd(ReadCmd *data);	  // 发送读命令
 	U8 WriteSuperheatCmd(Valve_WriteSuperheat *data); // 发送写过热度命令
 	U8 ReadData(Valve_ReadData *data);		  // 读取膨胀阀数据
-
+	
 private:
 	
 	U32 time_out_seconds;
