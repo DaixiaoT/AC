@@ -60,6 +60,9 @@ public:
 		// LOG_PRINT("Set_AI %d\n",force_value);
 		return TRUE;
 	}
+	BOOL isError(){
+		return value==bad_value;
+	}
 
 private:
 	BOOL force_flag;

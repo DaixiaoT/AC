@@ -6,6 +6,7 @@ U16 EEV_Valve::getSuperheat()
     return superheat;
 }
 
+//not complete
 void FRESH_AIR_DAMP::DoSelfCheck()
 {
 

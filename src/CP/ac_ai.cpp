@@ -1,6 +1,6 @@
 
 #include "ac_ai.h"
-
+#include "ac_ctrl.h"
 AI_CTRL ctrl_AI[AI_NUM];
 BOOL DampCalcCallback(S16 ad, AI_TYPE *pro_v, AI_TYPE *valve)
 {
@@ -45,6 +45,12 @@ void AI_init()
 	for (int i = 0; i < AI_NUM; i++)
 	{
 		ctrl_AI[i].config(ai_info[i].name, ai_info[i].sensor_cfg);
+	}
+}
+
+BOOL CheckTempError(){
+	if(ctrl_AI[0].isError()){
+		// g_car.
 	}
 }
 

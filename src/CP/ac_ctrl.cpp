@@ -15,14 +15,16 @@ void ACControl::ProcessMode()
 
     U8 flag = -1;
     flag = g_car.SelfTestMode();
-    LOG_PRINT("selfTestFlag:%d\n", flag);
-    LOG_PRINT("freshAirDampResistor:%d",g_car.set1.FreshAirDamp.resistor_feedback);
-    LOG_PRINT("Compressor frequency:%d\n",g_car.set1.Compressor_1.freq_HZ);
+    // LOG_PRINT("selfTestFlag:%d\n", flag);
+    // LOG_PRINT("freshAirDampResistor:%d",g_car.set1.FreshAirDamp.resistor_feedback);
+    // LOG_PRINT("Compressor frequency:%d\n",g_car.set1.Compressor_1.freq_HZ);
+    g_car.SetTemp(1, 2, 3);
+    g_car.Td = 4;
 }
 
 BOOL ACControl::SelfTestMode()
 {
-    LOG_PRINT("Enter ACControl::SelfTestMode() SelfCheckTime=%d\n",set1.FreshAirDamp.SelfCheckTime.GetRunTime());
+    LOG_PRINT("Enter ACControl::SelfTestMode() SelfCheckTime=%d\n", set1.FreshAirDamp.SelfCheckTime.GetRunTime());
     set1.FreshAirDamp.DoSelfCheck();
     if (set1.FreshAirDamp.SelfCheckState == 2)
     {
@@ -32,6 +34,22 @@ BOOL ACControl::SelfTestMode()
     {
         return FALSE;
     }
+}
+
+void ACControl::ToVent()
+{
+    g_car.ToMode(SET_VENT);
+}
+
+void ACControl::ToMode(SET_MODE mode)
+{
+}
+
+void ACControl::SetTemp(S16 temp_Tf, S16 temp_Tg, S16 temp_Ts)
+{
+    g_car.Tf = temp_Tf;
+    g_car.Tg = temp_Tg;
+    g_car.Ts = temp_Ts;
 }
 
 /*
