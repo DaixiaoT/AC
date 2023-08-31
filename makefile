@@ -32,6 +32,9 @@ INCDIRS += $(CORE)/trdp/dg/common/inc $(CORE)/trdp/dg/target/inc
 INCDIRS += src/logic src/CP/trdp
 CPPSRCS += $(wildcard src/CP/trdp/*.cpp)
 
+INCDIRS += src/logic src/CP/ptu
+CPPSRCS += $(wildcard src/CP/ptu/*.cpp)
+
 
 
 CPPSRCS += $(wildcard $(CORE)/g0/*.cpp)   $(wildcard $(CORE)/driver/*/*.cpp)  $(wildcard src/canopen/src/*.cpp) $(wildcard src/canopen/OD/*.cpp) $(wildcard src/CP/*.cpp)  

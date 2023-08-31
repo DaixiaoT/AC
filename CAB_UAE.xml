@@ -1,0 +1,19 @@
+<cmdl project="CAB_hvac" protocol="">
+
+    <state_page get_len="200" set_len="200">
+        <frame rect="20 50 320 500" text="XJ3_DI" color="#f0f0e0">
+            
+            <field type="state" datatype="int16" color="#00f000">
+                <title rect="20 45 180 22" align="left" text="新风门反馈" />
+                <ack rect="205 45 30 22" align="left" pos="0" />
+                <set rect="240 45 60 22" align="left" text="LOCK" pos="0" valid="2.0" />
+            </field>
+
+
+        </frame>
+
+
+    </state_page>
+
+
+</cmdl>

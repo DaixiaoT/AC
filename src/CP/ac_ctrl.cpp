@@ -1,10 +1,9 @@
 
 #include "ac_ctrl.h"
-
 ACControl g_car;
-
 void ACControl::Init()
 {
+    LOG_PRINT("ACControl Init()\n");
     g_car.set1.FreshAirDamp.DO_Open = DO_FAS_Open;
     g_car.set1.FreshAirDamp.DO_Close = DO_FAS_Close;
     g_car.set1.FreshAirDamp.Init();
@@ -17,6 +16,8 @@ void ACControl::ProcessMode()
     U8 flag = -1;
     flag = g_car.SelfTestMode();
     LOG_PRINT("selfTestFlag:%d\n", flag);
+    LOG_PRINT("freshAirDampResistor:%d",g_car.set1.FreshAirDamp.resistor_feedback);
+    LOG_PRINT("Compressor frequency:%d\n",g_car.set1.Compressor_1.freq_HZ);
 }
 
 BOOL ACControl::SelfTestMode()
