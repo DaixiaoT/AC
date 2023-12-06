@@ -3,6 +3,7 @@
 #include "ac_include.h"
 #include "ac_ai.h"
 #include "trdp_udp.h"
+#include "ac_ctrl.h"
 enum MAINTENANCE_BUS
 {
 	MAINTENANCE_UART,

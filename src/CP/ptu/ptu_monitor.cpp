@@ -50,7 +50,17 @@ void Reply_DeviceIOInfoPacket(MAINTENANCE_BUS bus)
 void StoreDeviceIOInfo(char *p, int len)
 {   
 	U8 *buf = (U8*)p;
-    g_car.set1.FreshAirDamp.resistor_feedback=666;
+	if (GetBit8(buf[21], 0) == 1) {
+		g_car.set1.FreshAirDamp.resistor_feedback = Get16(buf+5)*100;
+		LOG_PRINT("\n强制失败\n");
+		//g_car.set1.FreshAirDamp.resistor_feedback = 333;
+	}
+	if (GetBit8(buf[21], 1) == 1) {
+		g_car.set1.FreshAirDamp.resistor_feedback = Get16(buf+7)*10;
+		LOG_PRINT("\n强制成功\n");
+		//g_car.set1.FreshAirDamp.resistor_feedback = 444;
+	}
+    //g_car.set1.FreshAirDamp.resistor_feedback=Get16(buf);
     g_car.set1.Compressor_1.freq_HZ=555;
     
 }

@@ -3,10 +3,15 @@
     <state_page get_len="200" set_len="200">
         <frame rect="20 50 320 500" text="XJ3_DI" color="#f0f0e0">
             
-            <field type="state" datatype="int16" color="#00f000">
+            <field type="state" datatype="int16_sing" color="#00f000">
                 <title rect="20 45 180 22" align="left" text="新风门反馈" />
-                <ack rect="205 45 30 22" align="left" pos="0" />
-                <set rect="240 45 60 22" align="left" text="LOCK" pos="0" valid="2.0" />
+                <ack rect="205 45 30 22" align="left" pos="5" />
+                <set rect="240 45 60 22" align="left" text="LOCK" pos="5" valid="21.0" />
+            </field>
+            <field type="state" datatype="int16_sing" color="#00f000">
+                <title rect="20 70 180 22" align="left" text="回风门反馈" />
+                <ack rect="205 70 30 22" align="left" pos="7" />
+                <set rect="240 70 60 22" align="left" text="LOCK" pos="7" valid="21.1" />
             </field>
 
 

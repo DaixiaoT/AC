@@ -60,6 +60,7 @@ void maintenance_uart_recv(int bus, U8 *buf, int len) // 接收PTU数据
 {
     LOG_PRINT("PTU buf:%d,len:%d\n",buf,len);
     ProcessMaintainPacket((MAINTENANCE_BUS)bus, (char *)buf, len);
+    //g_car.set1.FreshAirDamp.resistor_feedback = len;
 }
 
 void Init_Can_sema()

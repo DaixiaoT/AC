@@ -69,6 +69,8 @@ BOOL FRESH_AIR_DAMP::Closed()
 
 void FRESH_AIR_DAMP::Init()
 {
+    SelfCheckState++;
     LOG_PRINT("FreshAirDamp Init()\n");
-    resistor_feedback=222;
-}
+    resistor_feedback=5000;
+    
+} 
