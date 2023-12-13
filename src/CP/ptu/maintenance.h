@@ -21,7 +21,17 @@ int maintenance_send(MAINTENANCE_BUS bus, U8 *buf, int len);
 
 void maintenance_uart_recv(int bus, U8 *buf, int len);//接收PTU数据
 
-
+static void SetBit(U8* ptr, int idx, int bit, U8 v)
+{
+	if (v)
+	{
+		ptr[idx] |= (1 << bit);
+	}
+	else
+	{
+		ptr[idx] &= ~(1 << bit);
+	}
+}
 
 
 

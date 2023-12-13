@@ -21,7 +21,7 @@ enum DI_DEFINE{
 	DI_TEMP_SWITCH_4,			// TEMP switch 3
 	DI_CP1_HP, //高压开关1
 	DI_CP2_HP, //高压开关2
-	DI_CP1_LP, // 低压开关1
+	DI_CP1_LP, //低压开关1
 	DI_CP2_LP, //低压开关2
 	DI_SPARE_22, //空余
 	DI_MODE_SWITCH_POWER, //模式开关关机反馈

@@ -3,20 +3,19 @@
 #include "ac_include.h"
 #include "ac_set.h"
 
-enum SET_MODE{
-    SET_FORCE_STOP=0,  // 强制停机 
-    SET_STOP,	       // 顺序停机
-	SET_VENT,	       // 通风
-	SET_EM_VENT,       // 紧急通风
-	SET_HALF_COOL,     // 半冷
-	SET_FULL_COOL,     // 全冷
-	SET_HALF_HEAT,     // 半热
-	SET_FULL_HEAT,     // 全热
-	SET_INIT_COOL,     // 预冷
-	SET_INIT_HEAT,     // 预热
-	SET_FORCE_VENT,    // 强制通风
-	SET_AUTO,
+enum HAND_MODE{
+    HAND_HAND=2,              //手动手动
+    HAND_AUTO=5,              //手动自动
+    HAND_OFF=0,               //手动关机
 };
+
+enum AC_MODE {
+    
+};
+
+
+
+
 
 
 
@@ -32,6 +31,9 @@ class ACControl
 public:
     ACSet set1;
     TRDP_IN trdp;
+    HAND_MODE handMode;
+
+    AC_MODE prev_ctrlMode;
     S16 Td;
     S16 Tf;
     S16 Ts;
@@ -42,8 +44,12 @@ public:
     void ProcessMode();
     BOOL SelfTestMode();
     void ToVent();
-    void ToMode(SET_MODE mode);
+    void ToMode(AC_MODE mode);
     void SetTemp(S16 Tf, S16 Tg, S16 Ts);
+
+private:
+    HAND_MODE UpdateHandMode();
+
 };
 
 extern ACControl g_car;

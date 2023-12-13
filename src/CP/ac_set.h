@@ -10,12 +10,14 @@
 class ACSet
 {
 public:
-    Freq_Module freq1, freq2;              // 变频器485通信模块
-    Valve_Module valve1, valve2;           // 膨胀阀485通信模块
+    Freq_Module freq1_485module, freq2_485module;              // 变频器485通信模块
+    Valve_Module valve1_485module, valve2_485module;           // 膨胀阀485通信模块
     FRESH_AIR_DAMP FreshAirDamp;           // 新风门
     Fan Ventilator_1, Ventilator_2;        // 通风机
     Compressor Compressor_1, Compressor_2; // 压缩机
-    EEV_Valve EEV1, EEV2;                  // 膨胀阀
+    //EEV_Valve EEV1, EEV2;                  // 膨胀阀
+    Valve valve[VALVE_NUM];
+    Freq freq[FREQ_NUM];
 
 public:
     

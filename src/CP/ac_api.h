@@ -17,6 +17,9 @@ void ac_CarNumberUpdate();
 void ac_HVAC_to_TRDP(U8 car);
 
 void Up_my_sensor();
+void ResetACParm(AC_PARM* p);
+static BOOL LoadACParm(AC_PARM* p);
+static BOOL StoreACParm(AC_PARM* p);
 void ac_ModbusDataSwitch();
 
 #endif // _AC_API_H_

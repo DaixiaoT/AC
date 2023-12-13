@@ -134,6 +134,7 @@ static DG_S32 trdp_pd_demo(DG_S32 *trdp_err_no);
 
 /* ==================================================================================
 * Local function implementations
+* 使用svc_set来设置提供的键值对，并返回操作状态
 * ================================================================================*/
 static SVC_S32 set_key(const char* key, const char* val, EXT_HANDLE_P hdl)
 {
@@ -149,7 +150,9 @@ static SVC_S32 set_key(const char* key, const char* val, EXT_HANDLE_P hdl)
 
     return status;
 }
-
+/*
+通过get_key来获取给定键的值，并将结果存储在res指针所指向的位置
+*/
 static SVC_S32 get_key(const char* key, char* res, EXT_HANDLE_P hdl)
 {
     SVC_S32 status;
@@ -165,7 +168,9 @@ static SVC_S32 get_key(const char* key, char* res, EXT_HANDLE_P hdl)
 
     return status;
 }
-
+/*
+检查特定键对应的值是否位up
+*/
 static SVC_S32 if_is_up(const char* key, EXT_HANDLE_P hdl)
 {
     SVC_S32 status;
@@ -189,6 +194,9 @@ static SVC_S32 if_is_up(const char* key, EXT_HANDLE_P hdl)
     return ret;
 }
 
+/*
+等待指定的网络接口变为up状态，这个函数会不断轮询获取接口状态直到超时 或 接口状态变为up
+*/
 static void wait_until_up(const char* key, SVC_S32 timeout, EXT_HANDLE_P hdl)
 {
     SVC_S32 status;
@@ -245,6 +253,9 @@ static void wait_until_up(const char* key, SVC_S32 timeout, EXT_HANDLE_P hdl)
     }
 }
 
+/*
+调用svc_init函数进行初始化，并对初始化过程中的错误进行处理和反馈
+*/
 static SVC_S32 svc_initialize(EXT_HANDLE_P hdl)
 {
 	SVC_S32 svc_errno = 0;  // error code from the firmware
@@ -289,6 +300,9 @@ static SVC_S32 svc_initialize(EXT_HANDLE_P hdl)
 	return 0;
 }
 
+/*
+检查给定的key是否具有期望的值，如果不是，则将其设置为传入的val值
+*/
 static SVC_S32 svc_check_parameter(const SVC_CHAR8* key, const SVC_CHAR8* val, SVC_S32* status, EXT_HANDLE_P hdl)
 {
     SVC_S32 ret_val = 0;
@@ -309,7 +323,9 @@ char g_mac1[18];
 char g_mac2[18];
 char g_device_op[20];
 static char s_res[255] ={0};
-
+/*
+对设备的配置进行检查，如果配置文件被修改，则进行相应的设置
+*/
 static SVC_S32 svc_check_config(EXT_HANDLE_P hdl)
 {
     SVC_S32 ret_val = 0;
@@ -393,6 +409,7 @@ static SVC_S32 svc_check_config(EXT_HANDLE_P hdl)
     return ret_val;
 }
 
+//设置s_stat变量的值，并对线程进行上锁，避免多个线程同时修改s_stat变量
 void trdp_set_stat(TRDP_STAT s)
 {
 	TRDP_LOCK();
@@ -400,6 +417,7 @@ void trdp_set_stat(TRDP_STAT s)
 	TRDP_UNLOCK();
 }
 
+//获取s_stat变量的值，
 TRDP_STAT trdp_get_stat()
 {
 	if(s_stat == TRDP_NULL)
@@ -411,6 +429,9 @@ TRDP_STAT trdp_get_stat()
 	return s;
 }
 
+/*
+操作特定的引脚来执行硬件复位操作
+*/
 static void trdp_hw_reset()
 {
     TRDP_RST_LOW();
@@ -418,6 +439,9 @@ static void trdp_hw_reset()
     TRDP_RST_HIGH();
 }
 
+/*
+配置TRDP协议相关的参数和通信设置
+*/
 static int trdp_config()
 {
 	DG_S32 trdp_err_no = 0;
@@ -574,9 +598,13 @@ static int trdp_config()
     return -5;
 }
 
+
+/*
+用于驱动TRDP应用数据和复制
+*/
 static void drive_trdp_app_data()
 {
-    TRDP_LOCK();
+    TRDP_LOCK();//上锁，确保线程安全
     mem_copy((U8*)&s_havctoccudata_a,       (U8*)&s_havctoccudata_a_app, havctoccudatasize);
 
     if(s_ccutoalldata_a_app.CCU_Lifesign_U32 != s_ccutoalldata_a.CCU_Lifesign_U32)
@@ -598,7 +626,7 @@ static void drive_trdp_app_data()
 		s_tick_ccutohvac_b = sys_time();
 	mem_copy((U8*)&s_ccutohavcdata_b_app, (U8*)&s_ccutohavcdata_b, ccutohavcdatasize);
 
-    TRDP_UNLOCK();
+    TRDP_UNLOCK();//解锁
 }
 
 DG_DECL_PUBLIC DG_RESULT hdc_reset(DG_U8 card_index);
@@ -612,11 +640,14 @@ static void update_crc(U8 *buf, int len)
     Set32(buf + len - SIZE_OF_FCS, crc32_u32);
 }
 
+/*
+重要函数，涵盖TRDP应用的运行逻辑
 
+*/
 static int trdp_run()
 {
-    DG_S32 trdp_err_no;
-	DG_S32 ret_val = DG_TRDP_NO_ERR;
+    DG_S32 trdp_err_no;							//错误号码
+	DG_S32 ret_val = DG_TRDP_NO_ERR;			//返回值
 	//DG_S32 prev_ret_val = DG_TRDP_NO_ERR;
 	DG_U32 i = 0;
 	TRDP_PD_INFO pd_info;
@@ -628,9 +659,10 @@ static int trdp_run()
 		//prev_ret_val = ret_val;
 		//  printf("publish ComID %d on ETH0\n", com_id);
         
-		update_crc((U8*)&s_havctoccudata_a, havctoccudatasize);
+		update_crc((U8*)&s_havctoccudata_a, havctoccudatasize);//对数据进行CRC校验
 		update_crc((U8*)&s_havctoccudata_b, havctoccudatasize);
 
+		//发布数据到HVACTOCCU_COMIDA
 		s_ret_val_a = trdp_pd_publish(HAVCTOCCU_COMIDA, 1, (DG_U8*)&s_havctoccudata_a, havctoccudatasize, &trdp_err_no, NULL);
 	    osl_printf("ret_val_a: %d, err_no: %d\n", s_ret_val_a, trdp_err_no);
         s_ret_val_b = trdp_pd_publish(HAVCTOCCU_COMIDB, 1, (DG_U8*)&s_havctoccudata_b, havctoccudatasize, &trdp_err_no, NULL);
@@ -644,15 +676,17 @@ static int trdp_run()
 	//if(DG_TRDP_NO_ERR == ret_val)
 	{
 	//	prev_ret_val = ret_val;
-
+		//订阅数据到 CCUTOALL_COMIDA
 		s_ret_val_a |= trdp_pd_subscribe(CCUTOALL_COMIDA, 1, &trdp_err_no, NULL);
 	    osl_printf("ret_val_a: %d, err_no: %d\n", s_ret_val_a, trdp_err_no);
 	//	prev_ret_val = ret_val;
-
+		//订阅数据到 CCUTOALL_COMIDB
 		s_ret_val_b |= trdp_pd_subscribe(CCUTOALL_COMIDB, 1, &trdp_err_no, NULL);
 	    osl_printf("ret_val_b: %d, err_no: %d\n", s_ret_val_b, trdp_err_no);
+		//订阅数据到 CCUTOHAVC_COMIDA
 		s_ret_val_a |= trdp_pd_subscribe(CCUTOHAVC_COMIDA, 1, &trdp_err_no, NULL);
 	    osl_printf("ret_val_a: %d, err_no: %d\n", s_ret_val_a, trdp_err_no);
+		//订阅数据到 CCUTOHAVC_COMIDB
 		s_ret_val_b |= trdp_pd_subscribe(CCUTOHAVC_COMIDB, 1, &trdp_err_no, NULL);
 	    osl_printf("ret_val_b: %d, err_no: %d\n", s_ret_val_b, trdp_err_no);
 
@@ -670,35 +704,40 @@ static int trdp_run()
         HVACXs_Lifesign_U32+=1;
         TRDP_LOCK();
         s_havctoccudata_a.HVACXs_Lifesign_U32=hton32(HVACXs_Lifesign_U32);
-        s_havctoccudata_b.HVACXs_Lifesign_U32=hton32(HVACXs_Lifesign_U32);;
+        s_havctoccudata_b.HVACXs_Lifesign_U32=hton32(HVACXs_Lifesign_U32);//将HVACXs_Lifesign_U32 转换为网络字节序并存入 s_havctoccudata_a
         TRDP_UNLOCK();
 
 //		update_crc((U8*)&s_havctoccudata_a, havctoccudatasize);
 //		update_crc((U8*)&s_havctoccudata_b, havctoccudatasize);
 
 
-		ret_val = trdp_pd_put(HAVCTOCCU_COMIDA, (DG_U8*)&s_havctoccudata_a, havctoccudatasize, &trdp_err_no, NULL);
+		ret_val = trdp_pd_put(HAVCTOCCU_COMIDA, (DG_U8*)&s_havctoccudata_a, havctoccudatasize, &trdp_err_no, NULL);//将s_havctoccudata_a放入TRDP的发布队列
 //	    osl_printf("Put dataset %u, %u, %u, %u, %u - ret_val %d, errno: %d\n", havctoccudataA[0], havctoccudataA[1], havctoccudataA[2], havctoccudataA[3], havctoccudataA[4], ret_val, trdp_err_no);
 		ret_val = trdp_pd_put(HAVCTOCCU_COMIDB, (DG_U8*)&s_havctoccudata_b, havctoccudatasize, &trdp_err_no, NULL);
 //	    osl_printf("Put dataset %u, %u, %u, %u, %u - ret_val %d, errno: %d\n", havctoccudataB[0], havctoccudataB[1], havctoccudataB[2], havctoccudataB[3], havctoccudataB[4], ret_val, trdp_err_no);
 
         sleep(100);
 
+		//从CCUTOALL_COMIDA 获取数据到s_ccutoalldata_a
 		pd_info.src_ip = 0;
 		ret_val = trdp_pd_get(CCUTOALL_COMIDA, &pd_info.src_ip, &pd_info.dest_ip, &pd_info.seq_count, &pd_info.msg_type, (DG_U8*)s_rx_buf, &ccutoalldatasize, &trdp_err_no, NULL);
         if(ret_val == DG_TRDP_NO_ERR)  mem_copy((U8*)&s_ccutoalldata_a, (U8*)s_rx_buf, ccutoalldatasize);
 
 //	    osl_printf("Got dataset %u, %u, %u, %u, %u, from 0x%x, - ret_val %d, errno: %d\n", ccutoalldataA[0], ccutoalldataA[1], ccutoalldataA[2], ccutoalldataA[3], ccutoalldataA[4], pd_info.src_ip, ret_val, trdp_err_no);
+		//从CCUTOALL_COMIDB 获取数据到s_ccutoalldata_b
 		pd_info.src_ip = 0;
 		ret_val = trdp_pd_get(CCUTOALL_COMIDB, &pd_info.src_ip, &pd_info.dest_ip, &pd_info.seq_count, &pd_info.msg_type, (DG_U8*)s_rx_buf, &ccutoalldatasize, &trdp_err_no, NULL);
         if(ret_val == DG_TRDP_NO_ERR)  mem_copy((U8*)&s_ccutoalldata_b, (U8*)s_rx_buf, ccutoalldatasize);
 //	    osl_printf("Got dataset %u, %u, %u, %u, %u, from 0x%x, - ret_val %d, errno: %d\n", ccutoalldataB[0], ccutoalldataB[1], ccutoalldataB[2], ccutoalldataB[3], ccutoalldataB[4], pd_info.src_ip, ret_val, trdp_err_no);
         sleep(100);
 
+		//从CCUTOHAVC_COMIDA 获取数据到s_ccutoalldata_a
         pd_info.src_ip = 0;
 		ret_val = trdp_pd_get(CCUTOHAVC_COMIDA, &pd_info.src_ip, &pd_info.dest_ip, &pd_info.seq_count, &pd_info.msg_type, (DG_U8*)s_rx_buf, &ccutohavcdatasize, &trdp_err_no, NULL);
         if(ret_val == DG_TRDP_NO_ERR)  mem_copy((U8*)&s_ccutohavcdata_a, (U8*)s_rx_buf, ccutohavcdatasize);
 //	    osl_printf("Got dataset %u, %u, %u, %u, %u, from 0x%x, - ret_val %d, errno: %d\n", ccutohavcdataA[0], ccutohavcdataA[1], ccutohavcdataA[2], ccutohavcdataA[3], ccutohavcdataA[4], pd_info.src_ip, ret_val, trdp_err_no);
+		
+		//从CCUTOHAVC_COMIDB 获取数据到s_ccutoalldata_b
 		pd_info.src_ip = 0;
 		ret_val = trdp_pd_get(CCUTOHAVC_COMIDB, &pd_info.src_ip, &pd_info.dest_ip, &pd_info.seq_count, &pd_info.msg_type, (DG_U8*)s_rx_buf, &ccutohavcdatasize, &trdp_err_no, NULL);
         if(ret_val == DG_TRDP_NO_ERR)  mem_copy((U8*)&s_ccutohavcdata_b, (U8*)s_rx_buf, ccutohavcdatasize);
@@ -711,7 +750,7 @@ static int trdp_run()
         if(TimeGap(time)>=5000) 
         {
 			time=sys_time();
-
+			//检查并重新发布和订阅数据
             if (s_ret_val_a!=DG_TRDP_NO_ERR)
             {
 				s_ret_val_a = trdp_pd_publish(HAVCTOCCU_COMIDA, 1, (DG_U8*)&s_havctoccudata_a, havctoccudatasize, &trdp_err_no, NULL);

@@ -4,13 +4,13 @@ Valve valve[VALVE_NUM];
 Freq freq[FREQ_NUM];
 
 static Freq_Module *s_freq[FREQ_NUM] = {
-    &g_car.set1.freq1,
-    &g_car.set1.freq2,
+    &g_car.set1.freq1_485module,
+    &g_car.set1.freq2_485module,
 };
 
 static Valve_Module *s_valve[VALVE_NUM] = {
-    &g_car.set1.valve1,
-    &g_car.set1.valve2};
+    &g_car.set1.valve1_485module,
+    &g_car.set1.valve2_485module };
 
 // typedef struct
 // {
@@ -439,6 +439,11 @@ U8 Valve::ReadData(Valve_ReadData *data)
         return 3;
     }
     return 4;
+}
+
+U16 Valve::getSuperheat()
+{
+    return superheat;
 }
 
 
