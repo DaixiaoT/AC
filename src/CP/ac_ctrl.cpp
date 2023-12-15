@@ -26,7 +26,7 @@ void ACControl::ProcessMode()
 
 }
 
-//自检流程未测试
+//自检流程已测试
 BOOL ACControl::SelfTestMode()
 {
 

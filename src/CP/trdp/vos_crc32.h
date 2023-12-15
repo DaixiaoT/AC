@@ -5,7 +5,7 @@
 
 #define pgm_read_dword(a) (*(a))
 
-static const U32 fcs_table[256u]  =
+static const U32 fcs_table[256u] =
 {
 	0x00000000u, 0x77073096u, 0xee0e612cu, 0x990951bau,
 	0x076dc419u, 0x706af48fu, 0xe963a535u, 0x9e6495a3u,
@@ -85,16 +85,16 @@ static const U32 fcs_table[256u]  =
 *  @retval             crc32 according to IEEE802.3
 */
 
-U32 vos_crc32 (
-    U32      crc,
-    const U8 *pData,
-    U32      dataLen)
+U32 vos_crc32(
+	U32      crc,
+	const U8* pData,
+	U32      dataLen)
 {
 
-    U32 i;
-    for (i = 0u; i < dataLen; i++)
-    {
-        crc = (crc >> 8u) ^ pgm_read_dword(&fcs_table[(crc ^ pData[i]) & 0xffu]);
-    }
-    return ~crc;
+	U32 i;
+	for (i = 0u; i < dataLen; i++)
+	{
+		crc = (crc >> 8u) ^ pgm_read_dword(&fcs_table[(crc ^ pData[i]) & 0xffu]);
+	}
+	return ~crc;
 }

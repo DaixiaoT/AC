@@ -12,6 +12,7 @@ static inline void gpioSetDir(int port, int pin, int val)
 */
 static inline void gpioSetValue(GPIO_TypeDef* GPIOx, U16 pin, int val)
 {
+    
     if(val)
         //GPIOx->BSRRL = (uint16_t)(1<<pin); // SET
         GPIO_SetBits(GPIOx, (uint16_t)(1<<pin));

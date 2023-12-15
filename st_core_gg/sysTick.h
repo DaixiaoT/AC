@@ -28,7 +28,7 @@ static inline int TimeGap(U32 t) {
 void sysTick_init(void);
 
 #ifndef _TOS_
-void sleep(int ms);
+//void sleep(int ms);
 #endif
 
 #endif

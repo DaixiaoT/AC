@@ -6,3 +6,7 @@
 
 
 #endif
+
+void StoreDeviceParaInfo(char* p, int len);
+
+void ReplyDeviceParaInfo(MAINTENANCE_BUS bus);

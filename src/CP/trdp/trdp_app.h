@@ -2,9 +2,9 @@
 #define _TRDP_APP_H__
 #include "trdp_data.h"
 
-typedef enum 
+typedef enum
 {
-	TRDP_NULL=0,//还没有初始化信号量
+	TRDP_NULL = 0,//还没有初始化信号量
 	TRDP_RESET,
 	TRDP_WAIT_15S,
 	TRDP_INITING,
@@ -23,9 +23,9 @@ extern TRDP_CCU2HVAC g_ccutohavcdata;
 extern TRDP_COMM_DATA g_ccutoalldata;
 extern TRDP_HVAC2CCU g_havctoccudata;
 
-typedef enum 
+typedef enum
 {
-	CHANNEL_NULL=0,
+	CHANNEL_NULL = 0,
 	CHANNEL_A,
 	CHANNEL_B,
 	CHANNEL_AUTO,

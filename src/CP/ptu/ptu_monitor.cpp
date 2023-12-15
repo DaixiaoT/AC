@@ -18,6 +18,9 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 	buf[3] = 0x31;
 	Set16(buf + 68, (S16)(ctrl_AI[3].getValue()));
 	
+	for (i = 0; i < DO_NUM; i++)
+		SetBit(buf, 21 + i / 8, i % 8, DO_STAT(i));
+
 
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
 	return Tlen;
@@ -27,14 +30,15 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 void StoreDeviceIOInfo(char *p, int len)
 {   
 	U8 *buf = (U8*)p;
-	
+	for (int i = 0; i < DI_NUM; i++)
+		g_DI.SetForce(i, GetBit8(buf[21 + i / 8], i % 8), GetBit8(buf[5 + i / 8], i % 8));
 	ctrl_AI[3].force(GetBit8(buf[130], 3), ((AI_TYPE)(Get16(buf + 68))));
+	
 }
 #else 
 
 //未修改
 void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
-{
 	U8* buf = (U8*)p;
 	int i;
 	// 强制控制器主机DI
@@ -294,10 +298,22 @@ int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
 
 #endif
 
-
+//PTU 500ms自动刷新
 void maintenance_update()
 {
+	int len;
+	static U32 CheckTime = 0;
 
+	if (sys_time() - CheckTime < 500)
+		return;
+	CheckTime = sys_time();
+
+	if (s_DeviceStatusAutoRefresh)
+	{
+		Reply_DeviceIOInfoPacket(s_bus);
+		
+	}
+	
 }
 
 void Reply_DeviceIdentifyInfoPacket(MAINTENANCE_BUS bus)

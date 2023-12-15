@@ -365,7 +365,7 @@
                 <title rect="20 40 140 22" align="left" text="回风温度传感器" />
                 <ack rect="165 40 55 22" align="left" pos="64" valid="54.1" />
                 <set rect="225 40 60 22" align="left" text="LOCK" pos="64" valid="130.1" />
-            </field>
+            </field>    
             <field type="state" datatype="float16x10" color="#00f000">
                 <title rect="20 65 140 22" align="left" text="送风温度传感器" />
                 <ack rect="165 65 55 22" align="left" pos="66" valid="54.2" />
