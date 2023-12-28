@@ -345,6 +345,13 @@
           
      				
         </frame>
+
+        <frame rect="1500 50 320 270" text="PPV" color="#d0f0d0">
+            <field type="state" datatype="int16_sing" color="#00f000">
+                <title rect="20 15 160 22" align="left" text="TRDP_LiveSignal" />
+                <ack rect="185 15 80 22" align="left" pos="242" />     
+            </field>			
+        </frame>
 		
 		 <frame rect="1150 330 320 90" text="version" color="#d0f0d0">
             <field type="state" datatype="int16_sing" color="#00f000">

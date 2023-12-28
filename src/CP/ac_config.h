@@ -11,13 +11,170 @@
 #define AC_RUN_INFO_ADDR (0x200)
 #endif // _SPI_FRAM_
 
+#define g_cool_D1 (g_parm.Cool_acu_D1_parm)
+#define g_cool_D2 (g_parm.Cool_acu_D2_parm)
+#define g_cool_D3 (g_parm.Cool_acu_D3_parm)
+#define g_cool_D4 (g_parm.Cool_acu_D4_parm)
+#define g_cool_D5 (g_parm.Cool_acu_D5_parm)
+#define g_heat_D1 (g_parm.Heat_acu_D1_parm)
+#define g_heat_D2 (g_parm.Heat_acu_D2_parm)
+
+#define gCompressorStartStopGap ((g_parm.Compressor_min_running_time) * 1000)  // 压缩机启动到停止的最短时间
+#define gFanStartStopGap ((5) * 1000)		        // 通风机启动到停止的最短时间
+#define gFanStopStartGap ((5) * 1000)		        // 通风机停止到启动的最短时间
+#define gCondensorFanStopGap ((g_parm.Supply_run_to_condenser_run_waiting_time) * 1000) // 冷凝风机到通风机停机的时间间隔
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #pragma pack(push, 1)
 struct AC_PARM
 {
+#if 0
 	U32 mark;
 	U8	ModeSwitchDelay_s;
 	U16 FreshAirDampAllOpenTime_s;
+	U16 Compressor_min_running_time;
+	U8 Supply_run_to_condenser_run_waiting_time;
+	S32 Passenger_No_parm;
+	S32 iTempSetpoint1_parm;
+	U16 Cool_acu_D1_parm;
+	U16 Cool_acu_D2_parm;
+	U16 Cool_acu_D3_parm;
+	U16 Cool_acu_D4_parm;
+	U16 Cool_acu_D5_parm;
+
+
+	S16 Heat_acu_D1_parm;
+	S16 Heat_acu_D2_parm;
+	S32 si_lowX_parm;
+	S32 si_lowY_parm;
+	S32 si_highX_parm;
+	S32 si_highY_parm;
 	U8 test;
+	U16 crc;
+#endif
+	U32 mark;
+	U8 CarNo;
+	U16 FreshAirDampAllOpenTime_s;	          // 新风阀全开时间(0.1秒)
+	U16 FDampOpenCloseTimeAW0_s;      // 新风阀 全开->1档时间(0.1秒)
+	U16 FDampOpenCloseTimeAW2_s;      // 新风阀 全开->2档时间(0.1秒)
+	U16 FDampOpenCloseTimeStroVent_s; // 新风阀 全开->3档时间(0.1秒)
+
+	U8 CarLoad_AW2; // 0->1档 百分比
+
+	U8 VentCondensorStartGap_s;        // 通风机启动->冷凝风机启动(秒)（13）
+	U8 CondensorCompressorStartGap_s;  // 冷凝风机启动->压缩机启动(秒)（14）
+	U8 CompressorCompressorStartGap_s; // 压缩机和压缩机启动时间间隔
+	U8 VentHeatStartGap_s;	           // 通风机和电加热启动时间间隔
+	U8 CompressorCondensorStopGap_s;   // 压缩机停机到冷凝风机停机的时间间隔
+	U8 VentHeatStopGap_s;	           // 通风机和电加热停止时间间隔
+	U8 EmPowerDelayTime_s;	           // 紧急逆变器延时启动时间
+	U8 EmVentKeepTime_m;	           // 紧急通风状态保持时间，45分钟
+
+	U16 CompressorStartStopGap_s; // 压缩机启动到停止的最短时间
+	U16 CompressorStopStartGap_s; // 压缩机停止到启动的最短时间
+	U16 CoolTargetTemp;	      // 制冷模式目标温度(度)（22）0.1度
+	U16 gInitCoolHeatKeepTime_m;  // 预冷最大时间(分钟)（24）
+	U16 CompressorStartLPGap_s;   // 压缩机启动到检测低压的最短时间
+	S16 Tf_adjust;	      // 新风温度校准标定
+	S16 Tr_adjust;	      // 回风温度校准标定
+	U16 HP_adjust;	      // 高压压力传感器校准标定
+	U16 LP_adjust;	      // 低压压力传感器校准标定
+
+	U8 FDampForceOpen; // 新风阀和废排风阀强制打开
+
+	U8 ModeSwitchDelay_s;
+	U8 TouchScreenDelay_s;
+	U8 SelftestModeOffsetTime_s;
+	U8 SelftestModeRandomTime_s;
+	U16 SelftestEndToCoolTime_s; // Starting time of Cooling mode after selftestin
+
+	U16 AutoModeOneCompressorTempOffset_t;
+	U16 AutoModeTwoCompressorTempOffset_t;
+	U16 AutoModeOneHeatTempOffset_t;
+	U16 AutoModeTwoHeatTempOffset_t;
+	U16 res;
+
+	U16 CoolHeatSwitchVentTime_s;
+
+	U8 TouchScreenCommTimeout_s;
+	U8 SensorErrorDelay_s;
+
+	U8 ComressorContactorErrTrigger;
+	U16 ComressorContactorErrDelay;
+
+	U8 ComressorHPErrTrigger;
+	U16 ComressorHpErrDelay;
+
+	U8 ComressorLPErrTrigger;
+	U16 ComressorLPErrDelay;
+
+	U8 ComressorCurrentErrTrigger;
+	U16 ComressorCurrentErrDelay;
+
+	U8 HeaterContactorErrTrigger;
+	U16 HeaterContactorErrDelay;
+
+	U8 HeaterOverheatErrTrigger;
+	U16 HeaterOverheatErrDelay;
+
+	U8 SupplyFanContactorErrTrigger;
+	U16 SupplyFanContactorErrDelay;
+
+	U8 CondensorFanContactorErrTrigger;
+	U16 CondensorFanContactorErrDelay;
+
+	U16 Compressor_error_Waiting_time;
+	U16 Heater_error_Waiting_time;
+	U16 Condensor_error_Waiting_time;
+	U16 Supply_error_Waiting_time;
+	U16 Temperature_setpoint;
+	U16 Overheat_ventilation_temperature;
+	U16 Overheat_ventilation_continuously;
+	U16 Overheat_ventilation_Restore_temperature;
+	U16 Overheat_ventilation_Restore_temperature_continuously;
+	U16 Overheat_off_temperature;
+	U16 Overheat_off_continuously;
+	U16 Overheat_off_Restore_temperature;
+	U16 Overheat_off_Restore_temperature_continuously;
+	U8 Supply_run_to_condenser_run_waiting_time;
+	U8 Condenser_run_to_Compressor_run_waiting_time;
+	U8 Compressor_run_to_Compressor_run_waiting_time;
+	U16 Compressor_min_running_time;
+	U16 Compressor_min_stopping_time;
+	U8 Min_off_time_of_other_devices;
+	U8 Supply_run_to_heaters_run_waiting_time;
+	U16 Max_supply_air_temperature;
+	U16 Max_supply_air_temperature_Restore;
+	U16 Supply_air_fan_running_time_after_off;
+	S32 Passenger_No_parm;
+	S32 iTempSetpoint1_parm;
+	S32 si_lowX_parm;
+	S32 si_lowY_parm;
+	S32 si_highX_parm;
+	S32 si_highY_parm;
+
+	U16 Cool_acu_D1_parm;
+	U16 Cool_acu_D2_parm;
+	U16 Cool_acu_D3_parm;
+	U16 Cool_acu_D4_parm;
+	U16 Cool_acu_D5_parm;
+
+
+	S16 Heat_acu_D1_parm;
+	S16 Heat_acu_D2_parm;
+
 	U16 crc;
 };
 #pragma pack(pop)
@@ -273,5 +430,29 @@ struct AC_RUN_INFO
 extern AC_RUN_INFO g_runInfo;
 
 extern AC_PARM g_parm;
+#define gPi_iP_Verst_TimeLimit (500) // PI 计算中 aiZ_Wait_PI_MODE_FGR 倒计时不等于0时 iP_Verst参数
+#define gPi_iP_Verst_TimeOut (300)	 // PI 计算中 aiZ_Wait_PI_MODE_FGR 倒计时等于0时 iP_Verst参数
+
+#define g_MIN_KANAL_Parm (20)		  // T_MIN_KANAL_FGR 回差值
+#define g_MAX_KANAL_Parm (20)		  // T_MAX_KANAL_FGR 回差值
+#define g_Passenger_No (g_parm.Passenger_No_parm) // Passenger_No 乘客数量
+#define g_TempSetpoint (g_parm.iTempSetpoint1_parm) // 常量
+#define g_si_lowX (g_parm.si_lowX_parm)
+#define g_si_lowY (g_parm.si_lowY_parm)
+#define g_si_highX (g_parm.si_highX_parm)
+#define g_si_highY (g_parm.si_highY_parm)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif // !__AC_CONFIG_H__

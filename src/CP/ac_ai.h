@@ -123,6 +123,7 @@ public:
 		m_ad = ad;
 		return ret;
 	}
+	
 
 private:
 	const char* m_name;
@@ -165,6 +166,6 @@ S16 U1HP1();
 
 S16 U1HP2();
 
-
+BOOL Check_TempError();
 
 #endif //__AI_UDPATE_H__

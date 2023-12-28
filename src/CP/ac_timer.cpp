@@ -1,33 +1,66 @@
 #include "ac_timer.h"
 
-U32 AC_TIMER::GetRunTime()
+U32 AC_TIMER::GetTotalRunTime()
 {
-    return RunTime;
+    return totalRunTime;
 }
 
-void AC_TIMER::AdjustRunTime()
+U32 AC_TIMER::GetThisRunTime()
 {
-    if (!IsOn())
-    {
-        return;
-    }
-    U8 gap = TimeGap(RunTime) / 1000;
-    if (gap >= 1)
-    {
-        RunTime++;
-    }
+    return thisRunTime;
 }
+
+U32 AC_TIMER::GetLastOpenTime()
+{
+    return lastOpenTime;
+}
+
+
 
 BOOL AC_TIMER::IsOn()
 {
-    return state;
+    return status;
 }
 
 void AC_TIMER::Start()
 {
     if(IsOn()){
-        AdjustRunTime();
+        //
         return;
     }
-    state=TRUE;
+    status=TRUE;
+}
+
+void AC_TIMER::Stop()
+{
+    if (!IsOn()) {
+        return;
+    }
+    status = FALSE;
+
+    if (IsStopClear)
+    {
+        Clear();
+    }
+    else
+    {
+        totalRunTime += (int)(TimeGap(onTimeMark) / 1000);
+        thisRunTime += (int)(TimeGap(onTimeMark) / 1000);
+    }
+}
+
+void AC_TIMER::Clear()
+{
+    totalRunTime = 0;
+    thisRunTime = 0;
+    onTime = sys_time();
+}
+
+void AC_TIMER::Init(const char* temp_name, U32 temp_thisRunTime, U32 temp_totalRunTime, BOOL temp_IsStopClear)
+{
+    name = temp_name;
+    status = FALSE;
+    totalRunTime = temp_totalRunTime;
+    thisRunTime = temp_thisRunTime;
+    IsStopClear = temp_IsStopClear;
 }

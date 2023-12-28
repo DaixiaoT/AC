@@ -21,24 +21,9 @@ void ac_init()
 		LOG_PRINT("bad ac parm. reset it.\r\n");
 
 		ResetACParm(&g_parm);
+
 		StoreACParm(&g_parm);
 	}
-
-	// 加载运行参数
-	//if (!LoadRunInfo(&g_runInfo))
-	//{
-	   // LOG_PRINT("bad ac runInfo, reset it.\r\n");
-		//ResetRunInfo(&g_runInfo);
-		//StoreRunInfo(&g_runInfo);
-		//firstBoot = TRUE;
-	//}
-	//else
-	//{
-		//firstBoot = TRUE; // 要求 不加入每天首次上电才进去预冷
-	//}
-
-
-
 
 	g_car.Init();
 }
@@ -57,6 +42,8 @@ void ac_control(U32 run_sec)
 	static U32 s_time = 0;
 	if (TimeGap(s_time) < 500)
 		return;
+
+	
 	s_time = sys_time();
 	g_car.ProcessMode();
 	//故障记录存储
@@ -69,7 +56,18 @@ void ac_control(U32 run_sec)
 }
 void ac_TRDP_to_Logic(U8 car)
 {
-
+	switch (car) {
+	case 1:
+		g_car.trdp.Set_Mode(TRDP_MODE(g_ccutohavcdata.CCU_HVAC_Car1Mode_U8));
+		g_car.trdp.Set_Compressor_Enable(g_ccutohavcdata.CCU_HVAC_Car1Start_B1);
+		g_car.trdp.Set_TempMode_Enable(g_ccutohavcdata.CCU_HVAC_Car1TempModeSet_B1);
+		break;
+	case 7:
+		g_car.trdp.Set_Mode(TRDP_MODE(g_ccutohavcdata.CCU_HVAC_Car7Mode_U8));
+		g_car.trdp.Set_Compressor_Enable(g_ccutohavcdata.CCU_HVAC_Car7Start_B1);
+		g_car.trdp.Set_TempMode_Enable(g_ccutohavcdata.CCU_HVAC_Car7TempModeSet_B1);
+		break;
+	}
 }
 void ac_CarNumberUpdate()
 {
@@ -94,24 +92,26 @@ void ac_CarNumberUpdate()
 		}
 		if (s_car_no != 0)
 		{
-			g_parm.test = 1;
-			LOG_AC("\ng_parm.test=%d\n", g_parm.test);
+			//g_parm.test = 1;
+			//LOG_AC("\ng_parm.test=%d\n", g_parm.test);
 			trdp_app_init(s_car_no);
 		}
 		s_trdp_time = sys_time();
 	}
-	if ((s_car_no == 1) || (s_car_no == 4) && (TimeGap(s_trdp_time) >= 100) && (sys_time() > 30 * 1000))
+	if ((s_car_no == 1) || (s_car_no == 7) && (TimeGap(s_trdp_time) >= 500) && (sys_time() > 30 * 1000))
 	{
 		ac_HVAC_to_TRDP(s_car_no);
 		ac_TRDP_to_Logic(s_car_no);
 		s_trdp_time = sys_time();
-		LOG_AC("\n车号：%d\n", s_car_no);
+		//LOG_AC("\n车号：%d\n", s_car_no);
 	}
 
 }
 
 void ac_HVAC_to_TRDP(U8 car)
 {
+	g_havctoccudata.HVACs_CNo_I_A_U8 = car;
+	
 
 }
 
@@ -176,7 +176,23 @@ void ResetACParm(AC_PARM* p) // 复位参数
 
 	p->ModeSwitchDelay_s = 5;
 	p->FreshAirDampAllOpenTime_s = 350;
+	p->Passenger_No_parm = 0;
+	p->iTempSetpoint1_parm = 220; // 常量
+	p->si_lowX_parm = -200;
+	p->si_lowY_parm = 320;
+	p->si_highX_parm = 320;
+	p->si_highY_parm = 70;
 
+	p->Cool_acu_D1_parm = 120;
+	p->Cool_acu_D2_parm = 90;
+	p->Cool_acu_D3_parm = 60;
+	p->Cool_acu_D4_parm = 30;
+	p->Cool_acu_D5_parm = 0;
+
+
+
+	p->Heat_acu_D1_parm = -20; // 0
+	p->Heat_acu_D2_parm = -90; //-50
 
 }
 

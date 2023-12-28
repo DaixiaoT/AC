@@ -149,7 +149,7 @@ typedef struct TRDP_CCU2HVAC
 	BOOLEAN1	CCU_HVAC_Car1Start_B1 : 1;		//	17	b7	1	1车压缩机允许启动信号	1=允许启动，0=不允许启动	0-1	空调只能在对应窗口内启动压缩机
 
 	//BYTE18
-	BOOLEAN1	CCU_BYTE18_BIT0 : 1;					//	18	b0	1	预留
+	BOOLEAN1	CCU_BYTE18_BIT0 : 1;				//	18	b0	1	预留
 	BOOLEAN1	CCU_HVAC_Car7TempModeSet_B1 : 1;	//	18	b1	1	7车温度模式设置	BOOL	3s脉冲	温度设定=1，温度未设定=0	0-1	温度模式设置有效时，更改温度和模式
 	BOOLEAN1	CCU_HVAC_Car6TempModeSet_B1 : 1;	//	18	b2	1	6车温度模式设置	BOOL	3s脉冲	温度设定=1，温度未设定=0	0-1	温度模式设置有效时，更改温度和模式
 	BOOLEAN1	CCU_HVAC_Car5TempModeSet_B1 : 1;	//	18	b3	1	5车温度模式设置	BOOL	3s脉冲	温度设定=1，温度未设定=0	0-1	温度模式设置有效时，更改温度和模式

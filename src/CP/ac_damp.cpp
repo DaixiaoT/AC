@@ -12,7 +12,7 @@ void FRESH_AIR_DAMP::DoSelfCheck()
 
 	static BOOL s_damp_flg = FALSE;
 
-	LOG_AC("DoSelfCheck1 m_check_stat:%d  m_resistor_fb1 :%d  OpenTime:%d  CloseTime:%d \r\n", SelfCheckState, resistor_feedback, TimeGap(DO_OpenTime),TimeGap(DO_CloseTime));
+	//LOG_AC("DoSelfCheck1 m_check_stat:%d  m_resistor_fb1 :%d  OpenTime:%d  CloseTime:%d \r\n", SelfCheckState, resistor_feedback, TimeGap(DO_OpenTime),TimeGap(DO_CloseTime));
 	switch (SelfCheckState)
 	{
 	case 0: //首次判断位置，
@@ -85,12 +85,13 @@ void FRESH_AIR_DAMP::DoSelfCheck()
 		return;
 
 	case 4:
+		//g_car.selfTestEndTime = sys_time();
 		SelfCheckFinished = TRUE;
-		LOG_AC("自检设备成功无故障\r\n");
+		//LOG_AC("自检设备成功无故障\r\n");
 		break;
 	case 6:
 		SelfCheckFinished = TRUE;
-		LOG_AC("自检设备有故障\r\n");
+		//LOG_AC("自检设备有故障\r\n");
 		break;
 	default:
 		break;

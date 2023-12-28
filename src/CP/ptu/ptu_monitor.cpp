@@ -1,6 +1,7 @@
 #include "ptu_monitor.h"
 #include "can_iap.h"
 #include "ac_ctrl.h"
+#include "../trdp/trdp_app.h"
 #define TEST 1
 unsigned char s_DeviceStatusAutoRefresh = 0;//为1时，控制器->PTU送数据
 
@@ -16,76 +17,51 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 	buf[0] = 0xf5;
 	Set16(buf + 1, Tlen);
 	buf[3] = 0x31;
-	Set16(buf + 68, (S16)(ctrl_AI[3].getValue()));
-	
+
+	// 控制器主机DI
+	for (i = 0; i < DI_NUM; i++)
+		SetBit(buf, 5 + i / 8, i % 8, DI_STAT(i));
+	// 控制器主机DO
 	for (i = 0; i < DO_NUM; i++)
 		SetBit(buf, 21 + i / 8, i % 8, DO_STAT(i));
 
+	for (int i = 0; i < AI_NUM; i++)
+	{
+		Set16(buf + 62 + (i * 2), (S16)(ctrl_AI[i].getValue()));
+		// SetBit(buf, 54 + (i / 8), i & 7, (S16)ctrl_ai[i].value() != (S16)ctrl_ai[i].bad_value());
+		SetBit(buf, 54 + (i / 8), i & 7, 1);
+	}
+	buf[242] = hton32(g_ccutohavcdata.CCU_Lifesign_U32)/1000;
+
+	i = 300;
+	// 机组1
+	Set32(buf + i, (g_car.set1.Compressor_2.lastOffTime-g_car.set1.Compressor_1.lastOnTime)/1000);
+	i += 4;
+	Set32(buf + i, g_car.set1.Compressor_2.getTotalRunTime()/1000);
+	
 
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
 	return Tlen;
 
 }
 
-void StoreDeviceIOInfo(char *p, int len)
-{   
-	U8 *buf = (U8*)p;
+void StoreDeviceIOInfo(char* p, int len)
+{
+	U8* buf = (U8*)p;
 	for (int i = 0; i < DI_NUM; i++)
 		g_DI.SetForce(i, GetBit8(buf[21 + i / 8], i % 8), GetBit8(buf[5 + i / 8], i % 8));
-	ctrl_AI[3].force(GetBit8(buf[130], 3), ((AI_TYPE)(Get16(buf + 68))));
 	
+	for (int i = 0; i < AI_NUM; i++)
+	{
+		ctrl_AI[i].force(GetBit8(buf[130 + i / 8], i % 8), ((AI_TYPE)(Get16(buf + 62 + (i * 2)))));
+	}
+
+
 }
 #else 
 
 //未修改
-void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
-	U8* buf = (U8*)p;
-	int i;
-	// 强制控制器主机DI
-	for (i = 0; i < DI_NUM; i++)
-		g_DI.SetForce(i, GetBit8(buf[21 + i / 8], i % 8), GetBit8(buf[5 + i / 8], i % 8));
-	// 强制控制器主机DO
-	for (i = 0; i < DO_NUM; i++)
-		g_DO.SetForce(i, GetBit8(buf[49 + i / 8], i % 8), GetBit8(buf[37 + i / 8], i % 8));
 
-	for (int i = 0; i < AI_NUM; i++)
-	{
-		ctrl_ai[i].force(GetBit8(buf[130 + i / 8], i % 8), ((AI_TYPE)(Get16(buf + 62 + (i * 2)))));
-	}
-	// DA
-	for (int i = 0; i < DA_NUM; i++)
-	{
-		ctrl_DA[i].force(GetBit8(buf[134 + i / 8], i % 8), Get16(buf + 122 + (i * 2)) * 100);
-		/*if (GetBit8(buf[134 + i / 8], i % 8)==1){
-			ctrl_DA[i].set_da((Get16(buf + 122 + (i * 2)))*100);
-		}*/
-	}
-
-	g_debug_var.var = Get32_LE(buf + 137);
-	if ((g_debug_var.var & 0x80000000) == 0) //PTU debug模式
-		g_debug_var.var = 0;
-
-	g_car.set1.Compressor_1.force_freq(GetBit8(buf[146], 0), Get16(buf + 164));
-	g_car.m_set1.m_compressor2.force_freq(GetBit8(buf[146], 1), Get16(buf + 166));
-	g_car.m_set1.m_compressor1.force_state(GetBit8(buf[147], 0), Get16(buf + 180));
-	g_car.m_set1.m_compressor2.force_state(GetBit8(buf[147], 1), Get16(buf + 182));
-	g_car.m_set1.m_EEV1.force_heat(GetBit8(buf[148], 0), Get16(buf + 184));
-	g_car.m_set1.m_EEV2.force_heat(GetBit8(buf[148], 1), Get16(buf + 186));
-
-	TXdata_cahce[0] = GetBit8(buf[148], 3);//PPV 强制lock 输出DO
-	TXdata_cahce[1] = GetBit8(buf[148], 4);
-
-	if (GetBit8(buf[500], 0))//PTU上的TRDP数据任一lock的状态
-	{
-		mem_copy((U8*)&g_havctoccudata, buf + 501, sizeof(g_havctoccudata));
-		mem_copy((U8*)&g_ccutoalldata, buf + 701, sizeof(g_havctoccudata));
-	}
-
-	if (GetBit8(buf[600], 0))
-	{
-		mem_copy((U8*)&g_ccutohavcdata, buf + 601, sizeof(g_ccutohavcdata));
-	}
-}
 
 int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
 {
@@ -294,6 +270,55 @@ int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
 	return Tlen;//反馈长度
 }
+void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
+{
+	U8* buf = (U8*)p;
+	int i;
+	// 强制控制器主机DI
+	for (i = 0; i < DI_NUM; i++)
+		g_DI.SetForce(i, GetBit8(buf[21 + i / 8], i % 8), GetBit8(buf[5 + i / 8], i % 8));
+	// 强制控制器主机DO
+	for (i = 0; i < DO_NUM; i++)
+		g_DO.SetForce(i, GetBit8(buf[49 + i / 8], i % 8), GetBit8(buf[37 + i / 8], i % 8));
+
+	for (int i = 0; i < AI_NUM; i++)
+	{
+		ctrl_ai[i].force(GetBit8(buf[130 + i / 8], i % 8), ((AI_TYPE)(Get16(buf + 62 + (i * 2)))));
+	}
+	// DA
+	for (int i = 0; i < DA_NUM; i++)
+	{
+		ctrl_DA[i].force(GetBit8(buf[134 + i / 8], i % 8), Get16(buf + 122 + (i * 2)) * 100);
+		/*if (GetBit8(buf[134 + i / 8], i % 8)==1){
+			ctrl_DA[i].set_da((Get16(buf + 122 + (i * 2)))*100);
+		}*/
+	}
+
+	g_debug_var.var = Get32_LE(buf + 137);
+	if ((g_debug_var.var & 0x80000000) == 0) //PTU debug模式
+		g_debug_var.var = 0;
+
+	g_car.set1.Compressor_1.force_freq(GetBit8(buf[146], 0), Get16(buf + 164));
+	g_car.m_set1.m_compressor2.force_freq(GetBit8(buf[146], 1), Get16(buf + 166));
+	g_car.m_set1.m_compressor1.force_state(GetBit8(buf[147], 0), Get16(buf + 180));
+	g_car.m_set1.m_compressor2.force_state(GetBit8(buf[147], 1), Get16(buf + 182));
+	g_car.m_set1.m_EEV1.force_heat(GetBit8(buf[148], 0), Get16(buf + 184));
+	g_car.m_set1.m_EEV2.force_heat(GetBit8(buf[148], 1), Get16(buf + 186));
+
+	TXdata_cahce[0] = GetBit8(buf[148], 3);//PPV 强制lock 输出DO
+	TXdata_cahce[1] = GetBit8(buf[148], 4);
+
+	if (GetBit8(buf[500], 0))//PTU上的TRDP数据任一lock的状态
+	{
+		mem_copy((U8*)&g_havctoccudata, buf + 501, sizeof(g_havctoccudata));
+		mem_copy((U8*)&g_ccutoalldata, buf + 701, sizeof(g_havctoccudata));
+	}
+
+	if (GetBit8(buf[600], 0))
+	{
+		mem_copy((U8*)&g_ccutohavcdata, buf + 601, sizeof(g_ccutohavcdata));
+	}
+}
 
 
 #endif
@@ -311,9 +336,9 @@ void maintenance_update()
 	if (s_DeviceStatusAutoRefresh)
 	{
 		Reply_DeviceIOInfoPacket(s_bus);
-		
+
 	}
-	
+
 }
 
 void Reply_DeviceIdentifyInfoPacket(MAINTENANCE_BUS bus)

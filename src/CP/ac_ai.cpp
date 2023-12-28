@@ -168,6 +168,14 @@ void AI_init()
 	}
 }
 
+BOOL Check_TempError() {
+	if (ctrl_AI[0].isError() || ctrl_AI[1].isError() || ctrl_AI[2].isError())
+	{		
+		return TRUE;
+	}
+	return FALSE;
+}
+
 
 
 void AI_Updata()

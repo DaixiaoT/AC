@@ -8,6 +8,7 @@
 #include "ADIO.h"
 #include "ac_dio.h"
 #include "ac_config.h"
+#include "ac_trdp.h"
 
 #define HI(x) ((U8)((x >> 8) & 0x00FF))
 #define LO(x) ((U8)(x & 0x00FF))
