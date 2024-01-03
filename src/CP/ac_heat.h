@@ -11,16 +11,14 @@ public:
 	BOOL isOn();
 	BOOL isRun();
 	BOOL isRunErr();
+	AC_TIMER timer;
 	void On();
-	U32 getTotalRunTime();
-	void setTotalRunTime(U32 tempTotalRunTime);
+	
 	U8 DO_run;
 	U8 DI_feedback;
 private:
 	
-	U32 lastOnTime;
-	U32 lastOffTime;
-	U32 totalRunTime;
+	
 };
 
 

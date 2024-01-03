@@ -6,26 +6,15 @@
 void Fan::On()
 {
 	DO_SET(DO_run);
-	
+	timer.Start();
 }
 
 void Fan::Off(BOOL Force)
 {
-	if (!isRun()) {
-		return;
-	}
-	if ((!Force) &&(TimeGap(lastOnTime) < gFanStartStopGap))
-	{
-		return;
-	}
-	if (getErr() != FanError_Null) {
-		DO_CLR(DO_run);
-		setOffTime(sys_time());
-		return;
-	}
+	
 	setRunStatus(FALSE);
 	DO_CLR(DO_run);
-	setOffTime(sys_time());
+	timer.Stop();
 }
 
 BOOL Fan::isRun()
@@ -48,15 +37,9 @@ void Fan::setSpeed(U16 tempSpeed)
 	this->speed = tempSpeed;
 }
 
-U32 Fan::getOffTime()
-{
-	return this->lastOffTime;
-}
 
-void Fan::setOffTime(U32 tempOffTime)
-{
-	this->lastOffTime = tempOffTime;
-}
+
+
 
 void Fan::setRunStatus(BOOL tempStatus)
 {

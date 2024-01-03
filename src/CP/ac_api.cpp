@@ -4,10 +4,12 @@
 #include "ex_module485.h"
 #include "trdp_app.h"
 #include "ptu/ptu_monitor.h"
-
-
+#include "ac_config.h"
+#include "ptu/ptu_error_run_log.h"
+#include "../can_iap.h"
 
 AC_PARM g_parm;
+
 AC_ERR_Record g_err_record;
 void ac_init()
 {
@@ -23,6 +25,15 @@ void ac_init()
 		ResetACParm(&g_parm);
 
 		StoreACParm(&g_parm);
+	}
+
+	// load run info
+	if (!LoadRunInfo(&g_runInfo))
+	{
+		LOG_PRINT("bad ac runInfo, reset it.\r\n");
+		ResetRunInfo(&g_runInfo);
+		StoreRunInfo(&g_runInfo);
+		
 	}
 
 	g_car.Init();
@@ -42,8 +53,10 @@ void ac_control(U32 run_sec)
 	static U32 s_time = 0;
 	if (TimeGap(s_time) < 500)
 		return;
-
-	
+	if (g_car.AdjustRunTimeInfo()) {
+		StoreRunInfo(&g_runInfo); // 机组设备运行时间存储
+		LOG_AC("运行数据存入铁电\n");
+	}
 	s_time = sys_time();
 	g_car.ProcessMode();
 	//故障记录存储
@@ -225,6 +238,26 @@ static BOOL StoreACParm(AC_PARM* p)
 	SpiFramWrite(AC_PARM_ADDR, (U8*)p, sizeof(AC_PARM));
 #endif // _SPI_FRAM_
 	return TRUE;
+}
+
+
+
+BOOL LoadRunInfo(AC_RUN_INFO* p)
+{
+#ifdef _SPI_FRAM_
+	SpiFramRead(AC_RUN_INFO_ADDR, (U8*)p, sizeof(AC_RUN_INFO));
+#endif // _SPI_FRAM_
+
+	U16 crc = CRC16((U8*)p, sizeof(AC_RUN_INFO) - 2);
+	return (p->mark == AC_RUN_INFO_MARK && p->crc == crc);
+}
+
+void ResetRunInfo(AC_RUN_INFO* p)
+{
+	mem_set((U8*)p, 0, sizeof(AC_RUN_INFO));
+
+	p->sw_ver = IAP_VERSION;
+	p->mark = AC_RUN_INFO_MARK;
 }
 
 

@@ -16,8 +16,7 @@ public:
 	U16 freq_Out;			//输出频率
 	U16 current_out;		//输出电流
 	U16 voltage_out;		//输出电压
-	U32 lastOnTime;			//上次启动时间
-	U32 lastOffTime;		//上次停止时间
+
 	U32 lastSetFrequencyTime;			//上次设置频率时间
 	S16 HP_Value;			//高压传感器值
 	S16 LP_Value;			//低压传感器值
@@ -26,7 +25,8 @@ public:
 	U8 HP_trigger;			// 触发6次制冷系统高压压力异常预警
 	U8 LP_trigger;			// 触发6次制冷系统低压压力异常预警
 	U32 HP_error_time;
-	U32 LP_error_time;
+	U32 LP_error_time;		
+	AC_TIMER timer;
 
 
 public:
@@ -38,12 +38,11 @@ public:
 	void forceOff();
 	BOOL isRun();
 	BOOL getErr();
-	U32 getTotalRunTime();
-	void setTotalRunTime(U32 tempTotalRunTime);
+
 
 private:
 	const char* name;
-	U32 totalRunTime;
+
 
 };
 

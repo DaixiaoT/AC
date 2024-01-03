@@ -1,3 +1,4 @@
+
 <cmdl project="CAB_hvac" protocol="">
 
     <state_page get_len="820" set_len="820">	
@@ -418,14 +419,14 @@
 		
 		
 		
-		<field type="state" datatype="int32" color="#00f000"> <title rect="420 20  130 22" align="left" text="CP1 Count" /> 			<ack rect="560 20   100 22" align="left" pos="364" /> </field>   <field type="state" datatype="bit" color="#ef3934"> <ack rect="660 20    30 22" align="left" pos="281.4" /> </field>
-        <field type="state" datatype="int32" color="#00f000"> <title rect="420 45  130 22" align="left" text="CP2 Count" /> 			<ack rect="560 45   100 22" align="left" pos="368" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 45    30 22" align="left" pos="281.5" /> </field>
-		<field type="state" datatype="int32" color="#00f000"> <title rect="420 70  130 22" align="left" text="CAF1 Count" /> 		<ack rect="560 70   100 22" align="left" pos="372" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 70    30 22" align="left" pos="281.6" /> </field>
-        <field type="state" datatype="int32" color="#00f000"> <title rect="420 95  130 22" align="left" text="CAF1 Redundance Count" />   	<ack rect="560 95   100 22" align="left" pos="376" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 95    30 22" align="left" pos="281.7" /> </field>
-        <field type="state" datatype="int32" color="#00f000"> <title rect="420 120 130 22" align="left" text="CAF2 Count" /> 		<ack rect="560 120  100 22" align="left" pos="380" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 120   30 22" align="left" pos="282.0" /> </field>
-		<field type="state" datatype="int32" color="#00f000"> <title rect="420 145 130 22" align="left" text="CAF2 Redundance Count"/> 	    <ack rect="560 145  100 22" align="left" pos="384" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 145   30 22" align="left" pos="282.1" /> </field>
-		<field type="state" datatype="int32" color="#00f000"> <title rect="420 170 130 22" align="left" text="SAF1 Count" />   		<ack rect="560 170  100 22" align="left" pos="388" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 170   30 22" align="left" pos="282.2" /> </field>
-		<field type="state" datatype="int32" color="#00f000"> <title rect="420 195 130 22" align="left" text="SAF2 Count" /> 	   		<ack rect="560 195  100 22" align="left" pos="392" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 195   30 22" align="left" pos="282.3" /> </field>
+		<field type="state" datatype="int32" color="#00f000"> <title rect="420 20  130 22" align="left" text="CP1 offtime gap" /> 			<ack rect="560 20   100 22" align="left" pos="364" /> </field>   <field type="state" datatype="bit" color="#ef3934"> <ack rect="660 20    30 22" align="left" pos="281.4" /> </field>
+        <field type="state" datatype="int32" color="#00f000"> <title rect="420 45  130 22" align="left" text="CP2 offtime gap" /> 			<ack rect="560 45   100 22" align="left" pos="368" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 45    30 22" align="left" pos="281.5" /> </field>
+		<field type="state" datatype="int32" color="#00f000"> <title rect="420 70  130 22" align="left" text="heater1 offtime gap" /> 		<ack rect="560 70   100 22" align="left" pos="372" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 70    30 22" align="left" pos="281.6" /> </field>
+        <field type="state" datatype="int32" color="#00f000"> <title rect="420 95  130 22" align="left" text="heater2 offtime gap" />   	<ack rect="560 95   100 22" align="left" pos="376" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 95    30 22" align="left" pos="281.7" /> </field>
+        <field type="state" datatype="int32" color="#00f000"> <title rect="420 120 130 22" align="left" text="CP1 ontime gap" /> 		<ack rect="560 120  100 22" align="left" pos="380" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 120   30 22" align="left" pos="282.0" /> </field>
+		<field type="state" datatype="int32" color="#00f000"> <title rect="420 145 130 22" align="left" text="CP2 ontime gap"/> 	    <ack rect="560 145  100 22" align="left" pos="384" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 145   30 22" align="left" pos="282.1" /> </field>
+		<field type="state" datatype="int32" color="#00f000"> <title rect="420 170 130 22" align="left" text="heater1 ontime gap" />   		<ack rect="560 170  100 22" align="left" pos="388" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 170   30 22" align="left" pos="282.2" /> </field>
+		<field type="state" datatype="int32" color="#00f000"> <title rect="420 195 130 22" align="left" text="heater2 ontime gap" /> 	   		<ack rect="560 195  100 22" align="left" pos="392" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 195   30 22" align="left" pos="282.3" /> </field>
 		<field type="state" datatype="int32" color="#00f000"> <title rect="420 220 130 22" align="left" text="Ht1 Count" />   		<ack rect="560 220  100 22" align="left" pos="396" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 220   30 22" align="left" pos="282.4" /> </field>
 		<field type="state" datatype="int32" color="#00f000"> <title rect="420 245 130 22" align="left" text="HT2 Count" /> 	   		<ack rect="560 245  100 22" align="left" pos="400" /> </field>	<field type="state" datatype="bit" color="#ef3934">  <ack rect="660 245   30 22" align="left" pos="282.5" /> </field>
 		
@@ -507,8 +508,8 @@
 		
 	<frame rect="20 830 310 165" text="Status" color="#c0e0e0">
 	
-		<field type="state" datatype="list" listdata="Off,STOP,Smoke,EM Ventilation,Car Wash,Auto heating,Auto half heating,Auto Cooling,Init Cooling,Init heating,Auto Vent,TRDP Heating,Hand Vent,hand half heating,hand heating,hand cooling,hand Emergency Vent,hand half cooling,Trdp Cooling,Trdp Vent,self,maintain,Emergency Cool">
-		//<field type="state" datatype="list" listdata="手动停机,自动停机,火灾,紧急通风,洗车模式,自动全热,自动半热,自动全冷,预冷,预热,自动通风,网络制热,手动通风,手动半热,手动全热,手动全冷,手动紧急通风,手动半冷,网络制冷,网络通风,自检,维护">
+		//<field type="state" datatype="list" listdata="Off,STOP,Smoke,EM Ventilation,Car Wash,Auto heating,Auto half heating,Auto Cooling,Init Cooling,Init heating,Auto Vent,TRDP Heating,Hand Vent,hand half heating,hand heating,hand cooling,hand Emergency Vent,hand half cooling,Trdp Cooling,Trdp Vent,self,maintain,Emergency Cool">
+		<field type="state" datatype="list" listdata="手动停机,顺序停机,通风,紧急通风,半冷,全冷,半热,全热,预冷,预热,强制通风,自动,手动通风,手动半热,手动全热,手动全冷,手动紧急通风,手动半冷,网络制冷,网络通风,自检,维护">
 			//<field type="state" datatype="list" listdata="1,2,3,4,5,6,7,8,9">
 			<title rect="20 15 110 22" align="left" text="State" />
 			<ack rect="130 15 115 22" align="left" pos="133" />
@@ -536,8 +537,8 @@
        //         <ack rect="160 90 30 22" align="left" pos="129" valid="130.0"/> 
        // </field> 
 	   
-	   	<field type="state" datatype="list" listdata="NULL,Vent,heating,Cooling,Auto,stop,half heating,wash car,Emergency Vent,Loadshedding,Smoke,Emergency Cool">
-	   	//<field type="state" datatype="list" listdata="未收到模式,通风,全热,制冷,AT,停止,半热,洗车,紧急通风,减载,火灾">
+	   	//<field type="state" datatype="list" listdata="NULL,Vent,heating,Cooling,Auto,stop,half heating,wash car,Emergency Vent,Loadshedding,Smoke,Emergency Cool">
+	   	<field type="state" datatype="list" listdata="未收到模式,全热,半热,制冷,通风,自动,停止,火灾,紧急通风,洗车,火灾">
 			<title rect="20 115 110 22" align="left" text="TRDP mode" />
 			<ack rect="130 115 115 22" align="left" pos="129" />
 		</field>

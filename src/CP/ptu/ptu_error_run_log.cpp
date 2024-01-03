@@ -99,7 +99,7 @@ static inline void get_rtc(U8* buf)
 	buf[5] = t.second;
 }
 
-static BOOL StoreRunInfo(AC_RUN_INFO* p)
+BOOL StoreRunInfo(AC_RUN_INFO* p)
 {
 	get_rtc(p->rtc);
 	p->crc = CRC16((U8*)p, sizeof(AC_RUN_INFO) - 2);

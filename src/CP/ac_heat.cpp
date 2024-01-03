@@ -4,8 +4,8 @@
 void Heater::Off()
 {
 	DO_CLR(DO_run);
-	this->lastOffTime = sys_time();
-	totalRunTime += (lastOffTime - lastOnTime);
+	timer.Stop();
+	
 }
 
 //Î´Íê³É
@@ -26,17 +26,12 @@ BOOL Heater::isRun()
 }
 
 BOOL Heater::isRunErr() {
-	return isOn() && !isRun() && TimeGap(this->lastOnTime)>3000 ;
+	return isOn() && !isRun()  ;
 }
 
 void Heater::On()
 {
 	DO_SET(DO_run);
-	lastOnTime = sys_time();
+	timer.Start();
 }
-U32 Heater::getTotalRunTime() {
-	return this->totalRunTime;
-}
-void Heater::setTotalRunTime(U32 tempTotalRunTime) {
-	this->totalRunTime = tempTotalRunTime;
-}
+

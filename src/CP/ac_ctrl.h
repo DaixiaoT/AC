@@ -78,6 +78,7 @@ public:
     S16 get_mix_TS(); //混合送风
     S16 get_mix_Tg(); //混合客室
     void GetHandTemp();//获取手动设定温度值
+    BOOL AdjustRunTimeInfo();//更新设备运行时间
    
 private:
     HAND_MODE UpdateHandMode();

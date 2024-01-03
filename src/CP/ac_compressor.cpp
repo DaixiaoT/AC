@@ -13,7 +13,7 @@ void Compressor::setFreq(U16 HZ, BOOL Force)
 	{
 		if ((firstStart == TRUE))
 		{ // 锁频3分钟，期间不需要判断高低压传感器进行降频处理
-			LOG_PRINT("锁频3分钟，频率40HZ 当前锁频时间=%d\r\n", TimeGap(lastOnTime));
+			//LOG_PRINT("锁频3分钟，频率40HZ 当前锁频时间=%d\r\n", TimeGap(lastOnTime));
 			freq_HZ = 4000;
 			HP_lock = FALSE;
 			LP_lock = FALSE;
@@ -85,37 +85,22 @@ BOOL Compressor::getErr()
 	return 0;
 }
 
-U32 Compressor::getTotalRunTime()
-{
-	return this->totalRunTime;
-}
 
-void Compressor::setTotalRunTime(U32 tempTotalRunTime)
-{
-	this->totalRunTime = tempTotalRunTime;
-}
+
+
 
 void Compressor::Off()
 {
     
-	//if (TimeGap(lastOnTime) < gCompressorStartStopGap) {
-	//	LOG_AC("压缩机上次启动到现在时间间隔不足180s");
-	//	//上次启动时间到现在不足180秒
-	//	return;
-	//}
-	setFreq(0, TRUE);
-	//if (TimeGap(lastSetFrequencyTime) < 1000) {
-	//	//设置频率时间不足1s
-	//	return;
-	//}
-	
-	if (DI_STAT(DI_feedback)) {
-		lastOffTime = sys_time();
-		totalRunTime += lastOffTime - lastOnTime;
+	if (TimeGap(timer.getOnTime()) < gCompressorStartStopGap) {
+		LOG_AC("压缩机上次启动到现在时间间隔不足180s");
+
+		return;
 	}
-	
-	DO_CLR(DO_run);
-    
+	setFreq(0, TRUE);
+
+	timer.Stop();
+	DO_CLR(DO_run);	
 }
 
 void Compressor::On()
@@ -123,13 +108,12 @@ void Compressor::On()
 	//压缩机允许启动信号
 	
 	//压缩机启停时间间隔
-
-	
-	if (!DI_STAT(DO_run)) {
-		this->lastOnTime = sys_time();
+	if (TimeGap(timer.getOffTime()) < gCompressorStartStopGap) {
+		LOG_AC("压缩机上次启动到现在时间间隔不足180s");
+		return;
 	}
+	
+	timer.Start();
 	DO_SET(DO_run);
 	
-
-
 }

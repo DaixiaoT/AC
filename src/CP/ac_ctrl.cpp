@@ -48,6 +48,9 @@ void ACControl::Init()
 	//电加热2
 	set1.heater2.DO_run = DO_HEATER2_Contactor;
 	set1.heater2.DI_feedback = DI_HEATER2_Feedback;
+	
+	set1.Compressor_1.timer.init("压缩机1", 0, g_runInfo.timer_u1.Cmp1, FALSE, 0);
+	set1.Compressor_2.timer.init("压缩机2", 0, g_runInfo.timer_u1.Cmp2, FALSE, 0);
 
 }
 
@@ -72,7 +75,6 @@ S16 ACControl::car_Intemp()
 //控制器主逻辑
 void ACControl::ProcessMode()
 {
-	LOG_AC("压缩机接触器反馈：%d\n", DI_STAT(set1.Ventilator_1.DI_feedback));
 	//LOG_PRINT("Enter ACControl::ProcessMode()\n");
 	//LOG_AC("\nTRDP Mode:%d\n", g_car.trdp.getMode());
 	//1.自检
@@ -165,6 +167,7 @@ void ACControl::ProcessMode()
 
 void ACControl::ToFullHeat()
 {
+	ctrlMode = SET_FULL_HEAT;
 	LOG_AC("全热模式\n");
 	BOOL heat1Err = set1.heater1.checkError();
 	BOOL heat2Err = set1.heater2.checkError();
@@ -184,10 +187,12 @@ void ACControl::ToFullHeat()
 	set1.Compressor_2.Off();
 
 	//判断压缩机是否关闭成功
-	if (!set1.Compressor_1.isRun() && !set1.Compressor_2.isRun()) {
-		set1.Condenser1.Off(FALSE);
-		set1.Condenser2.Off(FALSE);
+	if (set1.Compressor_1.isRun() || set1.Compressor_2.isRun()) {
+		LOG_AC("压缩机关闭失败\n");
+		return;
 	}
+	set1.Condenser1.Off(FALSE);
+	set1.Condenser2.Off(FALSE);
 
 	//判断冷凝风机是否关闭成功
 	if (set1.Condenser1.isRun() || set1.Condenser2.isRun()) {
@@ -208,6 +213,8 @@ void ACControl::ToFullHeat()
 
 	set1.heater1.On();
 	set1.heater2.On();
+
+
 
 	if (!set1.heater1.isRun() && !set1.heater2.isRun()) {
 		LOG_AC("电加热开启失败\n");
@@ -249,7 +256,7 @@ BOOL ACControl::SelfTestMode()
 void ACControl::ToHalfHeat()
 {
 	LOG_AC("半热模式\n");
-
+	ctrlMode = SET_HALF_HEAT;
 	BOOL heat1Err = set1.heater1.checkError();
 	BOOL heat2Err = set1.heater2.checkError();
 
@@ -259,6 +266,7 @@ void ACControl::ToHalfHeat()
 
 	//判断送风机是否开启
 	if (!set1.Ventilator_1.isRun() && !set1.Ventilator_2.isRun()) {
+		LOG_AC("送风机开启失败\n");
 		return;
 	}
 
@@ -267,10 +275,13 @@ void ACControl::ToHalfHeat()
 	set1.Compressor_2.Off();
 
 	//判断压缩机是否关闭成功
-	if (!set1.Compressor_1.isRun() && !set1.Compressor_2.isRun()) {
-		set1.Condenser1.Off(FALSE);
-		set1.Condenser2.Off(FALSE);
+	if (set1.Compressor_1.isRun() || set1.Compressor_2.isRun()) {
+		LOG_AC("压缩机关闭失败\n");
+		return;
 	}
+	set1.Condenser1.Off(FALSE);
+	set1.Condenser2.Off(FALSE);
+
 
 	//判断冷凝风机是否关闭成功
 	if (set1.Condenser1.isRun() || set1.Condenser2.isRun()) {
@@ -283,14 +294,7 @@ void ACControl::ToHalfHeat()
 		LOG_AC("两台电加热故障\n");
 	}
 
-	if ((!heat1Err) && (set1.heater1.getTotalRunTime() < set1.heater2.getTotalRunTime())) {
-		set1.heater1.On();
-		set1.Ventilator_1.setSpeed(7500);
-	}
-	else {
-		set1.heater2.On();
-		set1.Ventilator_2.setSpeed(7500);
-	}
+	
 
 
 	set1.FreshAirDamp.RunClose();
@@ -298,24 +302,23 @@ void ACControl::ToHalfHeat()
 
 void ACControl::ToStop() {
 	LOG_AC("停机模式\n");
-
+	ctrlMode = SET_STOP;
 	set1.heater1.Off();
 	set1.heater2.Off();
 
 	set1.Compressor_1.Off();
 	set1.Compressor_2.Off();
 
-	if (!set1.Compressor_1.isRun() && !set1.Compressor_2.isRun()) {
-		set1.Condenser1.Off(FALSE);
-		set1.Condenser2.Off(FALSE);
+	//判断压缩机是否关闭成功
+	if (set1.Compressor_1.isRun() || set1.Compressor_2.isRun()) {
+		LOG_AC("压缩机关闭失败\n");
+		return;
 	}
+	set1.Condenser1.Off(FALSE);
+	set1.Condenser2.Off(FALSE);
 
-	if (set1.Condenser1.getOffTime() && TimeGap(set1.Condenser1.getOffTime()) < gCondensorFanStopGap) {
-		return;
-	}
-	if (set1.Condenser2.getOffTime() && TimeGap(set1.Condenser2.getOffTime()) < gCondensorFanStopGap) {
-		return;
-	}
+
+	
 
 	set1.Ventilator_1.setSpeed(0);
 	set1.Ventilator_2.setSpeed(0);
@@ -330,7 +333,7 @@ void ACControl::ToHalfCool()
 void ACControl::ToVent()
 {
 	LOG_AC("通风模式\n");
-
+	ctrlMode = SET_VENT;
 	set1.heater1.Off();
 	set1.heater2.Off();
 
@@ -352,7 +355,7 @@ void ACControl::ToVent()
 void ACControl::ToFullCool()
 {
 	LOG_AC("\n全冷模式\n");
-
+	ctrlMode = SET_FULL_COOL;
 	BOOL condenser1Err = set1.Condenser1.getErr();
 	BOOL condenser2Err = set1.Condenser2.getErr();
 	BOOL compressor1Err = set1.Compressor_1.getErr();
@@ -394,14 +397,16 @@ void ACControl::ToFullCool()
 		//两个压缩机均故障
 	}
 
-	if ((!compressor1Err) && (set1.Compressor_1.getTotalRunTime() < set1.Compressor_2.getTotalRunTime())) {
+
+	/*if ((!compressor1Err) && (set1.Compressor_1.timer.getTotalRunTime() < set1.Compressor_2.timer.getTotalRunTime())) {
 		LOG_AC("一号压缩机开启\n");
 		set1.Compressor_1.On();
 	}
-	else {
-		LOG_AC("二号压缩机开启\n");
-		set1.Compressor_2.On();
-	}
+	else {*/
+		//LOG_AC("二号压缩机开启\n");
+	set1.Compressor_1.On();
+	set1.Compressor_2.On();
+	//}
 	
 
 
@@ -410,7 +415,7 @@ void ACControl::ToFullCool()
 void ACControl::ToAuto()
 {
 	LOG_AC("自动模式\n");
-
+	ctrlMode = SET_AUTO;
 	if (acu > g_heat_D1 && set1.Tf > 160) {
 		ToFullCool();
 	}
@@ -547,6 +552,25 @@ HAND_MODE ACControl::UpdateHandMode()
 
 
 	return (HAND_MODE)s_prev_mode;
+}
+
+BOOL ACControl::AdjustRunTimeInfo() {
+	static U32 s_poweron_tick = 0;
+	BOOL changed = FALSE;
+
+
+	if ((TimeGap(s_poweron_tick) > 30*1000))
+	{
+		changed = TRUE;
+		s_poweron_tick = sys_time();
+		g_runInfo.timer_u1.Cmp1 = set1.Compressor_1.timer.getTotalRunTime();
+		g_runInfo.timer_u1.Cmp2 = set1.Compressor_2.timer.getTotalRunTime();
+
+
+		
+	}
+
+	return changed;
 }
 
 /*

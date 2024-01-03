@@ -18,23 +18,22 @@ public:
 	FanError getErr();
 	U16 getSpeed();
 	void setSpeed(U16 tempSpeed);
-	U32 getOffTime();
-	void setOffTime(U32 tempOffTime);
+
 	void setRunStatus(BOOL tempStatus);
 	BOOL getRunStatus();
 public:
-
+	AC_TIMER timer;
 	U8 DO_run;
 	U8 DI_feedback;
 	const char* name;
 	U16 speed;
 
-	U32 lastOnTime;
+
 	U32 offTime;
 	FanError errLock;
 
 private:
-	U32 lastOffTime; 
+
 	BOOL runStatus;
 };
 

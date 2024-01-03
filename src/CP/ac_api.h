@@ -22,4 +22,8 @@ static BOOL LoadACParm(AC_PARM* p);
 static BOOL StoreACParm(AC_PARM* p);
 void ac_ModbusDataSwitch();
 
+BOOL LoadRunInfo(AC_RUN_INFO* p);
+void ResetRunInfo(AC_RUN_INFO* p);
+
+	
 #endif // _AC_API_H_

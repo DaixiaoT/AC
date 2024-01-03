@@ -31,14 +31,85 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 		// SetBit(buf, 54 + (i / 8), i & 7, (S16)ctrl_ai[i].value() != (S16)ctrl_ai[i].bad_value());
 		SetBit(buf, 54 + (i / 8), i & 7, 1);
 	}
+	buf[129] = g_car.trdpMode;
+	buf[133] = g_car.ctrlMode;
 	buf[242] = hton32(g_ccutohavcdata.CCU_Lifesign_U32)/1000;
 
 	i = 300;
 	// 机组1
-	Set32(buf + i, (g_car.set1.Compressor_2.lastOffTime-g_car.set1.Compressor_1.lastOnTime)/1000);
+	Set32(buf + i, (g_car.set1.Compressor_1.timer.getThisRunTime()));
 	i += 4;
-	Set32(buf + i, g_car.set1.Compressor_2.getTotalRunTime()/1000);
+
+	Set32(buf + i, g_car.set1.Compressor_1.timer.getTotalRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Compressor_2.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Compressor_2.timer.getTotalRunTime());
+	i += 4;
 	
+	Set32(buf + i, g_car.set1.Condenser1.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Condenser1.timer.getTotalRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Condenser2.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Condenser2.timer.getTotalRunTime());
+	i += 4;
+
+
+	Set32(buf + i, g_car.set1.Ventilator_1.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Ventilator_1.timer.getTotalRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Ventilator_2.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.Ventilator_2.timer.getTotalRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.heater1.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.heater1.timer.getTotalRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.heater2.timer.getThisRunTime());
+	i += 4;
+
+	Set32(buf + i, g_car.set1.heater2.timer.getTotalRunTime());
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.Compressor_1.timer.getOffTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.Compressor_2.timer.getOffTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.heater1.timer.getOffTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.heater2.timer.getOffTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.Compressor_1.timer.getOnTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.Compressor_2.timer.getOnTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.heater1.timer.getOnTime()) / 1000);
+	i += 4;
+
+	Set32(buf + i, TimeGap(g_car.set1.heater2.timer.getOnTime()) / 1000);
+	i += 4;
+
 
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
 	return Tlen;
