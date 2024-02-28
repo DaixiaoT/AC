@@ -11,6 +11,7 @@ typedef enum
 } FanError;
 class Fan {
 public:
+	BOOL isOn();
 
 	void On();
 	void Off(BOOL Force);

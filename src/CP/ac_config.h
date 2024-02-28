@@ -19,11 +19,14 @@
 #define g_heat_D1 (g_parm.Heat_acu_D1_parm)
 #define g_heat_D2 (g_parm.Heat_acu_D2_parm)
 
-#define gCompressorStartStopGap ((g_parm.Compressor_min_running_time) * 1000)  // 压缩机启动到停止的最短时间
-#define gFanStartStopGap ((5) * 1000)		        // 通风机启动到停止的最短时间
-#define gFanStopStartGap ((5) * 1000)		        // 通风机停止到启动的最短时间
-#define gCondensorFanStopGap ((g_parm.Supply_run_to_condenser_run_waiting_time) * 1000) // 冷凝风机到通风机停机的时间间隔
-#define gCompressorCondensorStopGap (120 * 1000)			    // 压缩机停机到冷凝风机停机的时间间隔
+#define gCompressorStartStopGap		((180) * 1000)		// 压缩机启动到停止的最短时间
+#define gFanStartStopGap			((10) * 1000)		// 通风机启动到停止的最短时间
+#define gFanStopStartGap			((10) * 1000)		// 通风机停止到启动的最短时间
+#define gCondensorFanStopStartGap	((10) * 1000)		// 冷凝风机最小启停时间
+#define gHeaterStopStartGap			((10)*1000)
+#define gHeaterStopCondensorStartGap ((5)*1000)			// 电加热停止到冷凝风机开启
+#define gCondensorFanStopGap		((5) * 1000)		// 冷凝风机到通风机停机的时间间隔
+#define gCompressorCondensorStopGap ((5) * 1000)		// 压缩机停机到冷凝风机停机的时间间隔
 
 
 #define AC_RUN_INFO_MARK 0x92fc6e52 // 增加了运行记录索引

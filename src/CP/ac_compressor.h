@@ -33,6 +33,7 @@ public:
 	void setFreq(U16 HZ, BOOL Force);
 	U16 getFrequency();
 	U16 getFreqState();
+	BOOL isOn();
 	void Off();
 	void On();
 	void forceOff();

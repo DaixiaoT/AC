@@ -50,8 +50,8 @@
 #define IAP_ID_BOOT (IAP_ID | IAP_ID_BootBit)
 
 
-
-#define App_HVACs_SWVH  1
+   
+#define App_HVACs_SWVH  1   
 #define App_HVACs_SWVM	0
 #define App_HVACs_SWVL	1
 

@@ -330,7 +330,7 @@ static BOOL DIO_test2(TestInfo_t* info)
 
 		if ((DI_STAT(di1) == 0) || (DI_STAT(di2) == 0))
 		{//³öÏÖ´íÎó
-			LOG_PRINT("ERROR£ºDO(%d)->1  DI(%d)->%d DI(%d)->%d\n", i + 1, di1 + 1, DI_STAT(di1), di2 + 1, DI_STAT(di2));
+			LOG_PRINT("ERROR:DO(%d)->1  DI(%d)->%d DI(%d)->%d\n", i + 1, di1 + 1, DI_STAT(di1), di2 + 1, DI_STAT(di2));
 
 			if (di1 == di2)
 			{

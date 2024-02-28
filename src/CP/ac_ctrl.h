@@ -57,6 +57,8 @@ public:
     U32 selfTestEndTime;
     BOOL selfTestFlag;
     U32 selfTestLastTime;
+    AC_TIMER coolingTimer;
+    AC_TIMER heatingTimer;
 public:
     void Init();
     S16 car_Outtemp();

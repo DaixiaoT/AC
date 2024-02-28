@@ -1,7 +1,9 @@
 #ifndef _AC_API_H_
 #define _AC_API_H_
+
 #include "ac_include.h"
 #include "ac_da.h"
+
 static U32 s_trdp_time = 0;
 
 static U32 s_now_time = 0;

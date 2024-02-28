@@ -1,5 +1,7 @@
 
 #include "ac_compressor.h"
+#include "debug_var.h"
+#include "ac_ctrl.h"
 
 void Compressor::setFreq(U16 HZ, BOOL Force)
 {
@@ -77,6 +79,9 @@ void Compressor::forceOff()
 
 BOOL Compressor::isRun()
 {
+	if (g_debug_var.bit.feedback_ignore) {
+		return isOn();
+	}
 	return DI_STAT(DI_feedback);
 }
 
@@ -85,31 +90,44 @@ BOOL Compressor::getErr()
 	return 0;
 }
 
+BOOL Compressor::isOn() {
+	return DO_STAT(DO_run);
+}
 
 
 
 
 void Compressor::Off()
 {
-    
-	if (TimeGap(timer.getOnTime()) < gCompressorStartStopGap) {
-		LOG_AC("压缩机上次启动到现在时间间隔不足180s");
+	if(!isOn()){
+		return;
+	}
+	if ((TimeGap(timer.getOnTime()) < gCompressorStartStopGap) && isOn()) {
+		LOG_AC("压缩机上次启动到现在时间间隔不足180s\n");
 
 		return;
 	}
 	setFreq(0, TRUE);
-
-	timer.Stop();
+	if(isOn()){
+		timer.Stop();
+	}
 	DO_CLR(DO_run);	
 }
 
 void Compressor::On()
 {
+	if(isOn()){
+		return;
+	}
+	LOG_AC("\n-----------------%d------------\n",g_car.trdp.Get_Compressor_Enable());
 	//压缩机允许启动信号
-	
+	// if(!g_car.trdp.Get_Compressor_Enable()){
+	// 	return;
+	// }
+
 	//压缩机启停时间间隔
-	if (TimeGap(timer.getOffTime()) < gCompressorStartStopGap) {
-		LOG_AC("压缩机上次启动到现在时间间隔不足180s");
+	if ((TimeGap(timer.getOffTime()) < gCompressorStartStopGap) && !isOn() ) {
+		LOG_AC("压缩机上次关闭到现在时间间隔不足180s\n");
 		return;
 	}
 	

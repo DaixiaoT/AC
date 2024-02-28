@@ -507,29 +507,29 @@ void module_init()
 }
 enum State
 {
-    enum_Freq_WriteReadCmd,
-    enum_Freq_ReadData,
-    enum_Freq_WriteFrequency,
-    enum_Freq_WriteWorkState,
-    enum_Valve_WriteReadCmd,
-    enum_Valve_ReadData,
-    enum_Valve_WriteSuperheat
+    enum_Freq_WriteReadCmd,         //变频器发送读取命令
+    enum_Freq_ReadData,             //变频器读取数据
+    enum_Freq_WriteFrequency,       //变频器写频率
+    enum_Freq_WriteWorkState,       //变频器写工作状态
+    enum_Valve_WriteReadCmd,        //膨胀阀发送读取命令
+    enum_Valve_ReadData,            //膨胀阀读取数据
+    enum_Valve_WriteSuperheat       //膨胀阀写过热度
 };
 
 void RS485_TASK()
 {
-    static int s_step = enum_Freq_WriteReadCmd;
-    static int s_device_num = 0;
+    static int s_step = enum_Freq_WriteReadCmd;//设定初始状态为——发送变频器读取命令
+    static int s_device_num = 0;               //设定初始设备号为0
     U8 temp = 0;
     // LOG_PRINT("Enter RS485_TASK() s_step:%d\n", s_step);
     switch (s_step)
     {
     case enum_Freq_WriteReadCmd:
-        if (wait_en() == FALSE)
+        if (wait_en() == FALSE)//等待发送读写命令延时各200ms
             return;
         if (freq[s_device_num].WriteReadCmd(&s_freq[s_device_num]->readcmd_data) == 1)
         {
-            s_step = enum_Freq_ReadData;
+            s_step = enum_Freq_ReadData;//发送完变频器读取命令后，接收变频器数据，状态更新为变频器读取数据
         }
         break;
     case enum_Freq_ReadData:
@@ -538,20 +538,23 @@ void RS485_TASK()
         // LOG_PRINT("Freq_ReadData,temp=%d\n", temp);
         temp = freq[s_device_num].ReadData(&s_freq[s_device_num]->Freqrx_data);
 
-        if (temp == 3)
+        if (temp == 3)//读取到的变频器数据正常
         {
-            s_step = enum_Freq_WriteFrequency;
-        }else if (temp == 1)
+            s_step = enum_Freq_WriteFrequency;//切换到变频器写频率状态
+        }else if (temp == 1)//读取到的变频器数据字节数小于等于0
         {
-            s_step = enum_Freq_WriteReadCmd;
-        }
+            s_step = enum_Freq_WriteReadCmd;//继续发送变频器读取数据命令
+        }   
+        //temp == 2     收到数据的地址/功能码错误
+        //temp == 4     其他错误
+
         break;
     case enum_Freq_WriteFrequency:
         if (wait_en() == FALSE)
             return;
         if (freq[s_device_num].WriteFrequencyCmd(&s_freq[s_device_num]->WRFreq_data) == 1)
         {
-            s_step = enum_Freq_WriteWorkState;
+            s_step = enum_Freq_WriteWorkState;//切换状态为变频器写工作状态
         }
         break;
     case enum_Freq_WriteWorkState:
@@ -559,7 +562,7 @@ void RS485_TASK()
             return;
         if (freq[s_device_num].WriteStateCmd(&s_freq[s_device_num]->WRFreq_mode) == 1)
         {
-            s_step = enum_Valve_WriteReadCmd;
+            s_step = enum_Valve_WriteReadCmd;//切换状态为膨胀阀写读取命令
         }
         break;
     case enum_Valve_WriteReadCmd:
@@ -578,7 +581,7 @@ void RS485_TASK()
 
         if (temp == 3)
         {
-            s_step = enum_Valve_WriteSuperheat;
+            s_step = enum_Valve_WriteSuperheat;//切换状态为膨胀阀写过热度
         }
         else if (temp == 1)
         {

@@ -57,13 +57,16 @@ class TRDP_IN
 {
 public:
     void Set_Mode(TRDP_MODE m);
+    void Set_OK(BOOL b);
     BOOL OK();
-    BOOL get_modeTemp();
-    S16 get_INTEMP();
-    S16 get_OUTTEMP();
+    BOOL Get_modeTemp();
+    S16 Get_InTemp();
+    S16 Get_OutTemp();
+    void Set_OutTemp(U8 t);
     void Set_Compressor_Enable(BOOL b);
     void Set_TempMode_Enable(BOOL b);
-    TRDP_MODE getMode();
+    TRDP_MODE Get_Mode();
+    BOOL Get_Compressor_Enable();
 private:
     TRDP_MODE mode, mode_f;	   // TCMS模式
     S16 Td, Td_f;	   // 目标温度

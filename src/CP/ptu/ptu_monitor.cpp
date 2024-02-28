@@ -1,7 +1,10 @@
 #include "ptu_monitor.h"
+
 #include "can_iap.h"
 #include "ac_ctrl.h"
 #include "../trdp/trdp_app.h"
+#include "debug_var.h"
+DEBUG_VAR g_debug_var;
 #define TEST 1
 unsigned char s_DeviceStatusAutoRefresh = 0;//为1时，控制器->PTU送数据
 
@@ -126,6 +129,7 @@ void StoreDeviceIOInfo(char* p, int len)
 	{
 		ctrl_AI[i].force(GetBit8(buf[130 + i / 8], i % 8), ((AI_TYPE)(Get16(buf + 62 + (i * 2)))));
 	}
+	g_debug_var.var = Get32_LE(buf + 137);
 
 
 }
@@ -394,23 +398,7 @@ void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
 
 #endif
 
-//PTU 500ms自动刷新
-void maintenance_update()
-{
-	int len;
-	static U32 CheckTime = 0;
 
-	if (sys_time() - CheckTime < 500)
-		return;
-	CheckTime = sys_time();
-
-	if (s_DeviceStatusAutoRefresh)
-	{
-		Reply_DeviceIOInfoPacket(s_bus);
-
-	}
-
-}
 
 void Reply_DeviceIdentifyInfoPacket(MAINTENANCE_BUS bus)
 {

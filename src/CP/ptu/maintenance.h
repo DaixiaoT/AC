@@ -42,7 +42,7 @@ static void SetBit(U8* ptr, int idx, int bit, U8 v)
 }
 
 
-
+void maintenance_update();
 void Init_Can_sema();//信号量初始化
 
 void Can_Pick_Data();//PPV数据CANOPEN

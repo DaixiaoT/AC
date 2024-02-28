@@ -1,3 +1,4 @@
+
 #include "ac_api.h"
 #include "ac_ctrl.h"
 #include "ac_ai.h"
@@ -7,6 +8,9 @@
 #include "ac_config.h"
 #include "ptu/ptu_error_run_log.h"
 #include "../can_iap.h"
+
+
+
 
 AC_PARM g_parm;
 
@@ -81,6 +85,8 @@ void ac_TRDP_to_Logic(U8 car)
 		g_car.trdp.Set_TempMode_Enable(g_ccutohavcdata.CCU_HVAC_Car7TempModeSet_B1);
 		break;
 	}
+	g_car.trdp.Set_OK(1);
+	g_car.trdp.Set_OutTemp(g_ccutohavcdata.CCU_HVAC_AverIOutTemp_U8);
 }
 void ac_CarNumberUpdate()
 {

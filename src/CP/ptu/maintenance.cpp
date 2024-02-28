@@ -3,7 +3,7 @@
 
 static unsigned long buf0[512];
 char *pMainTaincePacket = (char *)buf0 + 1;
-
+static MAINTENANCE_BUS s_bus = MAINTENANCE_UART; //通讯串口类型
 static void ProcessMaintainPacket(MAINTENANCE_BUS bus, char *p, int len)
 {
     char type = p[3];
@@ -66,13 +66,14 @@ unsigned char GetParity(unsigned char *p, int len)
 int maintenance_send(MAINTENANCE_BUS bus, U8 *buf, int len) // 给PTU发送数据
 {
     int ret = -1;
-
+    //LOG_PRINT("\n串口类型为:%d\n",bus);
     if (bus == MAINTENANCE_NET)
     {
         if ((ret = g_ptu_udp.send_udp_data(buf, len)) < 0)
             PRINT_ERR_INT(ret);
 
         ret = len;
+        
     }
     else
     {
@@ -87,13 +88,28 @@ int maintenance_send(MAINTENANCE_BUS bus, U8 *buf, int len) // 给PTU发送数据
 
 void maintenance_uart_recv(int bus, U8 *buf, int len) // 接收PTU数据
 {
-    LOG_PRINT("PTU buf:%d,len:%d\n",buf,len);
+    LOG_PRINT("PTU buf:%d,len:%d,s_bus:%d\n",buf,len,bus);
+    s_bus = (MAINTENANCE_BUS)bus;
     ProcessMaintainPacket((MAINTENANCE_BUS)bus, (char *)buf, len);
-    //g_car.set1.FreshAirDamp.resistor_feedback = len;
+
 }
-//void maintenance_update() {
-//    LOG_AC("\nPTU auto refresh\n");
-//}
+//PTU 500ms自动刷新
+void maintenance_update()
+{
+	int len;
+	static U32 CheckTime = 0;
+
+	if (sys_time() - CheckTime < 1000)
+		return;
+	CheckTime = sys_time();
+
+	if (s_DeviceStatusAutoRefresh)
+	{
+		Reply_DeviceIOInfoPacket(s_bus);
+		
+	}
+
+}
 
 void Init_Can_sema()
 {

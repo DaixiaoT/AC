@@ -32,7 +32,7 @@ public:
 private:
 	const char* name;
 	BOOL status;
-	BOOL IsStopClear;//停止是否清零
+	BOOL IsStopClear;		//停止是否清零
 	U32 onTimeMark;
 	U32 totalRunTime;		//总运行时间		单位秒
 	U32 thisRunTime;		//本次上电的运行时间 单位秒

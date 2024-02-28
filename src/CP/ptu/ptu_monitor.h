@@ -6,9 +6,9 @@
 #define EndianSwitch(word) (((word >> 8) & 0xff) | ((word & 0xff) << 8))
 
 extern unsigned char s_DeviceStatusAutoRefresh;
-static MAINTENANCE_BUS s_bus = MAINTENANCE_UART; //通讯串口类型
 
-void maintenance_update();
+
+
 
 void Reply_DeviceIdentifyInfoPacket(MAINTENANCE_BUS bus);
 void Reply_DeviceIOInfoPacket(MAINTENANCE_BUS bus);
