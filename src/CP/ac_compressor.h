@@ -2,6 +2,12 @@
 #define __AC_COMPRESSOR_H__
 #include "ac_include.h"
 
+//变频器故障枚举
+#define compressorLowPressureError 0x1		//低压故障
+#define compressorHighPressureError 0x2		//高压故障
+#define CompressorContactorError 0x4		//接触器故障
+
+
 // 压缩机
 class Compressor
 {
@@ -16,7 +22,10 @@ public:
 	U16 freq_Out;			//输出频率
 	U16 current_out;		//输出电流
 	U16 voltage_out;		//输出电压
-
+	// COMPRESSOR_ERROR_TYPE Error_type;	//压缩机故障类型
+	U8 Error_Flag;
+	U8 CompressorNumber;	//压缩机序号
+	U8 SetNumber;			//机组序号
 	U32 lastSetFrequencyTime;			//上次设置频率时间
 	S16 HP_Value;			//高压传感器值
 	S16 LP_Value;			//低压传感器值
@@ -27,6 +36,7 @@ public:
 	U32 HP_error_time;
 	U32 LP_error_time;		
 	AC_TIMER timer;
+	AC_TIMER FaultTimer;
 
 
 public:
@@ -47,9 +57,6 @@ private:
 
 };
 
-class CompSW
-{
-public:
-};
+
 
 #endif //__AC_COMPRESSOR_H__

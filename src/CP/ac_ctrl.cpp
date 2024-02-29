@@ -9,6 +9,7 @@ ACControl g_car;
 void ACControl::Init()
 {
 	LOG_PRINT("ACControl Init()\n");
+	FirstStartFlag = 1;
 	selfTestFlag = FALSE;
 
 	set1.FreshAirDamp.name = "新风门";
@@ -34,10 +35,12 @@ void ACControl::Init()
 	set1.Condenser2.DI_feedback = DI_CDF2_Feedback;
 
 	// 压缩机1
+	set1.Compressor_1.CompressorNumber = 1;
 	set1.Compressor_1.DO_run = DO_CP1_Contactor;
 	set1.Compressor_1.DI_feedback = DI_CP1_Feedback;
 
 	// 压缩机2
+	set1.Compressor_2.CompressorNumber = 2;
 	set1.Compressor_2.DO_run = DO_CP2_Contactor;
 	set1.Compressor_2.DI_feedback = DI_CP2_Feedback;
 
@@ -51,6 +54,8 @@ void ACControl::Init()
 
 	set1.Compressor_1.timer.init("压缩机1", 0, g_runInfo.timer_u1.Cmp1, FALSE, 0);
 	set1.Compressor_2.timer.init("压缩机2", 0, g_runInfo.timer_u1.Cmp2, FALSE, 0);
+	set1.Compressor_1.FaultTimer.init("压缩机1故障时间记录", 0, 0, TRUE, 0);
+	set1.Compressor_2.FaultTimer.init("压缩机2故障时间记录", 0, 0, TRUE, 0);
 }
 
 // 车辆新风温度，优先使用TRDP新风温度
@@ -72,12 +77,10 @@ S16 ACControl::car_Intemp()
 // 控制器主逻辑
 void ACControl::ProcessMode()
 {
+
 	LOG_AC("CCU_HVAC_Car1Mode_U8:%d\n", g_ccutohavcdata.CCU_HVAC_Car1Mode_U8);
 	LOG_AC("CCU_Lifesign_U32 mode:%d\n", g_ccutohavcdata.CCU_Lifesign_U32);
 
-	// LOG_AC("autoRefreshFlag:%d\n", s_DeviceStatusAutoRefresh);
-	// LOG_PRINT("Enter ACControl::ProcessMode()\n");
-	// LOG_AC("\nTRDP Mode:%d\n", g_car.trdp.getMode());
 	// 1.自检
 	U8 selfTestStatus = SelfTestMode();
 	if (selfTestStatus != 2)
@@ -163,6 +166,7 @@ void ACControl::ProcessMode()
 
 void ACControl::ToFullHeat()
 {
+
 	heatingTimer.Start();
 	coolingTimer.Stop();
 	ctrlMode = SET_FULL_HEAT;
@@ -276,6 +280,7 @@ BOOL ACControl::SelfTestMode()
 
 void ACControl::ToHalfHeat()
 {
+
 	heatingTimer.Start();
 	coolingTimer.Stop();
 	LOG_AC("半热模式\n");
@@ -442,6 +447,7 @@ void ACControl::ToVent()
 
 void ACControl::ToFullCool()
 {
+
 	heatingTimer.Stop();
 	coolingTimer.Start();
 	LOG_AC("\n全冷模式\n");
@@ -450,6 +456,24 @@ void ACControl::ToFullCool()
 	BOOL condenser2Err = set1.Condenser2.getErr();
 	BOOL compressor1Err = set1.Compressor_1.getErr();
 	BOOL compressor2Err = set1.Compressor_2.getErr();
+
+	if (compressor1Err && set1.Compressor_1.isOn())
+	{
+		set1.Compressor_1.FaultTimer.Start();
+	}
+	else
+	{
+		set1.Compressor_1.FaultTimer.Stop();
+	}
+
+	if (compressor2Err && set1.Compressor_2.isOn())
+	{
+		set1.Compressor_2.FaultTimer.Start();
+	}
+	else
+	{
+		set1.Compressor_2.FaultTimer.Stop();
+	}
 
 	// 打开送风机
 	set1.Ventilator_1.On();
@@ -500,40 +524,47 @@ void ACControl::ToFullCool()
 	}
 
 	// 压缩机故障
-	if (compressor1Err && compressor2Err)
+	if (compressor1Err || compressor2Err)
 	{
-		LOG_AC("两个压缩机均故障\n");
+		if (compressor1Err && compressor2Err && (set1.Compressor_1.FaultTimer.getThisRunTime() > 20))
+		{
+			LOG_AC("两个压缩机均故障\n");
+		}
+		else if (compressor1Err && (set1.Compressor_1.FaultTimer.getThisRunTime() > 20))
+		{
+			set1.Compressor_1.Off();
+		}
+		else if (compressor2Err && (set1.Compressor_2.FaultTimer.getThisRunTime() > 20))
+		{
+			set1.Compressor_1.Off();
+		}
+
 		// 两个压缩机均故障
 	}
+	LOG_AC("压缩机1故障时间：%d\n", set1.Compressor_1.FaultTimer.getThisRunTime());
+	LOG_AC("压缩机2故障时间：%d\n", set1.Compressor_2.FaultTimer.getThisRunTime());
 
-	/*if ((!compressor1Err) && (set1.Compressor_1.timer.getTotalRunTime() < set1.Compressor_2.timer.getTotalRunTime())) {
-		LOG_AC("一号压缩机开启\n");
-		set1.Compressor_1.On();
-	}
-	else {*/
-	// LOG_AC("二号压缩机开启\n");
 	set1.Compressor_1.On();
 	if (TimeGap(set1.Compressor_1.timer.getOnTime()) < 2000)
 	{
 		return;
 	}
 	set1.Compressor_2.On();
-	//}
 }
 
 void ACControl::ToAuto()
-{//系统首次进入制冷制热模式也需要等待10min
+{ // 系统首次进入制冷制热模式也需要等待10min
 	LOG_AC("自动模式\n");
 	ctrlMode = SET_AUTO;
-	if (acu > g_heat_D1 && set1.Tf > 160 && TimeGap(heatingTimer.getOffTime()) > 10*60 * 1000)
+	if (acu > g_heat_D1 && set1.Tf > 160 && (TimeGap(heatingTimer.getOffTime()) > 10 * 60 * 1000 || FirstStartFlag))
 	{
 		ToFullCool();
 	}
-	else if (acu > g_heat_D2 && TimeGap(coolingTimer.getOffTime()) > 10*60 * 1000)
+	else if (acu > g_heat_D2 && (TimeGap(coolingTimer.getOffTime()) > 10 * 60 * 1000 || FirstStartFlag))
 	{
 		ToHalfHeat();
 	}
-	else if (acu < g_heat_D2 && TimeGap(coolingTimer.getOffTime()) > 10*60 * 1000)
+	else if (acu < g_heat_D2 && (TimeGap(coolingTimer.getOffTime()) > 10 * 60 * 1000 || FirstStartFlag))
 	{
 		ToFullHeat();
 	}

@@ -70,6 +70,9 @@ void ac_control(U32 run_sec)
 	save_run_log();						  // ÔËÐÐ¼ÇÂ¼´æ´¢
 	ac_err_log_record(&g_err_record);
 	// s_time=sys_time();
+	if(TimeGap(s_now_time)>30*60*1000){
+		g_car.FirstStartFlag=0;
+	}
 }
 void ac_TRDP_to_Logic(U8 car)
 {

@@ -40,6 +40,7 @@ enum SET_MODE {
 class ACControl
 {
 public:
+    U8 FirstStartFlag;
     ACSet set1;
     TRDP_IN trdp;
     HAND_MODE handMode;
