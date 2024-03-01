@@ -15,63 +15,73 @@ void Compressor::setFreq(U16 HZ, BOOL Force)
 	if (isRun() && (HZ != 0))
 	{
 		if ((firstStart == TRUE))
-		{ // 锁频3分钟，期间不需要判断高低压传感器进行降频处理
+		{
+			// 锁频3分钟，期间不需要判断高低压传感器进行降频处理
 			// LOG_PRINT("锁频3分钟，频率40HZ 当前锁频时间=%d\r\n", TimeGap(lastOnTime));
 			freq_HZ = 4000;
 			HP_lock = FALSE;
 			LP_lock = FALSE;
 			return;
 		}
-		if ((HP_Value > 0) && ((HP_Value >= 220) || ((HP_Value >= 200) && (HP_lock == TRUE))) && (Force != TRUE))
-		{
-			if (HP_lock == FALSE)
-				HP_trigger = HP_trigger + 1;
-			HP_lock = TRUE;
-			if (TimeGap(HP_error_time) < 30 * 1000)
-				return;
-			if (freq_HZ <= 3000)
-				return;
-			freq_HZ = freq_HZ - 500;
-			HP_error_time = sys_time();
-			LP_lock = FALSE;
-			return;
-		}
-		else if ((LP_Value != -100) && (Force != TRUE) && (LP_Value <= 15) || ((Force != TRUE) && (LP_Value != -100) && (LP_Value <= 17) && (LP_lock == TRUE)))
-		{
-
-			LOG_PRINT("name：%s LP_Value =%d\r\n", name, LP_Value);
-			if (LP_lock == FALSE)
-				LP_trigger = LP_trigger + 1;
-			LP_lock = TRUE;
-			if (TimeGap(LP_error_time) < 60000)
-				return;
-			if (freq_HZ <= 3000)
-				return;
-			freq_HZ = freq_HZ - 500;
-			LP_error_time = sys_time();
-			HP_lock = FALSE;
-			return;
-		}
+	
 	}
 	if (HZ != 0)
 	{
 		lastSetFrequencyTime = sys_time();
 	}
 	freq_HZ = HZ;
-	HP_lock = FALSE;
-	LP_lock = FALSE;
 
 	return;
 }
 
 U16 Compressor::getFrequency()
 {
-	return freq_HZ;
+	if (force_flag & MD_FREQ_FREQ)
+	{
+		return freq_HZ_F;
+	}
+	else
+	{
+		return freq_HZ;
+	}
 }
 
 U16 Compressor::getFreqState()
 {
-	return freq_State;
+	if (force_flag & MD_FREQ_STATE)
+	{
+		return freq_State_F;
+	}
+	else
+	{
+		return freq_State;
+	}
+}
+
+void Compressor::forceFrequency(BOOL b, U16 HZ)
+{
+	if (b)
+	{
+		force_flag |= MD_FREQ_FREQ;
+		freq_HZ_F = HZ;
+	}
+	else
+	{
+		force_flag &= (~MD_FREQ_FREQ);
+	}
+}
+
+void Compressor::forceState(BOOL b, U16 state)
+{
+	if (b)
+	{
+		force_flag |= MD_FREQ_STATE;
+		freq_State_F = state;
+	}
+	else
+	{
+		force_flag &= (~MD_FREQ_STATE);
+	}
 }
 
 void Compressor::forceOff()
@@ -115,8 +125,8 @@ BOOL Compressor::getErr()
 		Error_Flag &= (~CompressorContactorError);
 	}
 
-	LOG_AC("\n压缩机%d故障,原因：%d,次数：%d\n", CompressorNumber, Error_Flag,FaultTimer.getOnCnt());
-	return Error_Flag|0x0;
+	LOG_AC("\n压缩机%d故障,原因：%d,次数：%d,时长：%d\n", CompressorNumber, Error_Flag, FaultTimer.getOnCnt(), FaultTimer.getThisRunTime());
+	return Error_Flag | 0x0;
 }
 
 BOOL Compressor::isOn()
@@ -132,7 +142,7 @@ void Compressor::Off()
 	}
 	if ((TimeGap(timer.getOnTime()) < gCompressorStartStopGap) && isOn())
 	{
-		LOG_AC("压缩机上次启动到现在时间间隔不足180s:%d\n",TimeGap(timer.getOnTime())/1000);
+		LOG_AC("压缩机上次启动到现在时间间隔不足180s:%d\n", TimeGap(timer.getOnTime()) / 1000);
 
 		return;
 	}
@@ -159,7 +169,7 @@ void Compressor::On()
 	// 压缩机启停时间间隔
 	if ((TimeGap(timer.getOffTime()) < gCompressorStartStopGap) && !isOn())
 	{
-		LOG_AC("压缩机上次关闭到现在时间间隔不足180s：%d\n",TimeGap(timer.getOffTime())/1000);
+		LOG_AC("压缩机上次关闭到现在时间间隔不足180s：%d\n", TimeGap(timer.getOffTime()) / 1000);
 		return;
 	}
 

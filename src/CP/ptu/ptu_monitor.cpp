@@ -6,13 +6,10 @@
 #include "debug_var.h"
 DEBUG_VAR g_debug_var;
 #define TEST 1
-unsigned char s_DeviceStatusAutoRefresh = 0;//为1时，控制器->PTU送数据
-
-
-
+unsigned char s_DeviceStatusAutoRefresh = 0; // 为1时，控制器->PTU送数据
 
 #if TEST
-int GetDeviceIOInfoPacket(U8* buf, int len)
+int GetDeviceIOInfoPacket(U8 *buf, int len)
 {
 	int i;
 	const int Tlen = 900;
@@ -34,9 +31,14 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 		// SetBit(buf, 54 + (i / 8), i & 7, (S16)ctrl_ai[i].value() != (S16)ctrl_ai[i].bad_value());
 		SetBit(buf, 54 + (i / 8), i & 7, 1);
 	}
+	for (int i = 0; i < DA_NUM; i++)
+	{
+		Set16(buf + 122 + (i * 2), (ctrl_DA[i].get_value() / 100));
+		SetBit(buf, 58 + (i / 8), i & 7, ctrl_DA[i].get_value() != 0);
+	}
 	buf[129] = g_car.trdpMode;
 	buf[133] = g_car.ctrlMode;
-	buf[242] = hton32(g_ccutohavcdata.CCU_Lifesign_U32)/1000;
+	buf[242] = hton32(g_ccutohavcdata.CCU_Lifesign_U32) / 1000;
 
 	i = 300;
 	// 机组1
@@ -51,7 +53,7 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 
 	Set32(buf + i, g_car.set1.Compressor_2.timer.getTotalRunTime());
 	i += 4;
-	
+
 	Set32(buf + i, g_car.set1.Condenser1.timer.getThisRunTime());
 	i += 4;
 
@@ -63,7 +65,6 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 
 	Set32(buf + i, g_car.set1.Condenser2.timer.getTotalRunTime());
 	i += 4;
-
 
 	Set32(buf + i, g_car.set1.Ventilator_1.timer.getThisRunTime());
 	i += 4;
@@ -113,43 +114,43 @@ int GetDeviceIOInfoPacket(U8* buf, int len)
 	Set32(buf + i, TimeGap(g_car.set1.heater2.timer.getOnTime()) / 1000);
 	i += 4;
 
-
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
 	return Tlen;
-
 }
 
-void StoreDeviceIOInfo(char* p, int len)
+void StoreDeviceIOInfo(char *p, int len)
 {
-	U8* buf = (U8*)p;
+	U8 *buf = (U8 *)p;
 	for (int i = 0; i < DI_NUM; i++)
 		g_DI.SetForce(i, GetBit8(buf[21 + i / 8], i % 8), GetBit8(buf[5 + i / 8], i % 8));
-	
+
 	for (int i = 0; i < AI_NUM; i++)
 	{
 		ctrl_AI[i].force(GetBit8(buf[130 + i / 8], i % 8), ((AI_TYPE)(Get16(buf + 62 + (i * 2)))));
 	}
+	g_car.set1.Compressor_1.forceFrequency(GetBit8(buf[146], 0), Get16(buf + 164));
+	g_car.set1.Compressor_2.forceFrequency(GetBit8(buf[146], 1), Get16(buf + 166));
+	g_car.set1.Compressor_1.forceState(GetBit8(buf[147], 0), Get16(buf + 180));
+	g_car.set1.Compressor_2.forceState(GetBit8(buf[147], 1), Get16(buf + 182));
+	
 	g_debug_var.var = Get32_LE(buf + 137);
-
-
 }
-#else 
+#else
 
-//未修改
+// 未修改
 
-
-int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
+int GetDeviceIOInfoPacket(U8 *buf, int len) // 取控制器数据
 {
 	int i;
-	const int Tlen = 900; //字节
+	const int Tlen = 900; // 字节
 	if (len < Tlen)
 	{
 		return 0;
 	}
-	mem_set(buf, 0, Tlen);//清零
-	buf[0] = 0xf5; //帧头
+	mem_set(buf, 0, Tlen); // 清零
+	buf[0] = 0xf5;		   // 帧头
 	Set16(buf + 1, Tlen);
-	buf[3] = 0x31;// 识别码
+	buf[3] = 0x31; // 识别码
 	// 控制器主机DI
 	for (i = 0; i < DI_NUM; i++)
 		SetBit(buf, 5 + i / 8, i % 8, DI_STAT(i));
@@ -180,15 +181,16 @@ int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
 	buf[127] = App_HVACs_SWVH;
 	// buf[128] =  App_HVACs_SWVM;
 	buf[128] = App_HVACs_SWVL;
-	if ((g_car.m_tRDP.get_EM_COOL() != FALSE) && (g_car.m_tRDP.OK() != FALSE)) {
+	if ((g_car.m_tRDP.get_EM_COOL() != FALSE) && (g_car.m_tRDP.OK() != FALSE))
+	{
 		buf[129] = 11;
 	}
-	else {
+	else
+	{
 		buf[129] = TRDP_MODE();
 	}
 
-
-	SetBit8(buf + 130, 0, 1);//PI计算值在PTU上显示
+	SetBit8(buf + 130, 0, 1); // PI计算值在PTU上显示
 	SetBit8(buf + 130, 1, g_car.m_tRDP.OK() == FALSE);
 	Set16(buf + 131, (U16)g_car.m_sw_temp);
 
@@ -197,7 +199,8 @@ int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
 	else
 		buf[133] = (g_car.m_init_cool_flag && IS_SET_INIT_COOL_MODE(g_car.m_set1.m_work_mode)) ? SET_INIT_COOL : HVAC_mode(g_car.m_set1.m_work_mode);
 
-	if ((g_car.m_tRDP.get_EM_COOL() != FALSE) && (g_car.m_tRDP.OK() != FALSE)) {
+	if ((g_car.m_tRDP.get_EM_COOL() != FALSE) && (g_car.m_tRDP.OK() != FALSE))
+	{
 		buf[133] = 22;
 	}
 
@@ -338,16 +341,16 @@ int GetDeviceIOInfoPacket(U8* buf, int len)//取控制器数据
 	Set32(buf + i, g_car.m_set1.m_heat2.m_km_num);
 	i += 4;
 
-	mem_copy(buf + 701, (U8*)&g_havctoccudata, sizeof(g_havctoccudata));
-	mem_copy(buf + 501, (U8*)&g_ccutohavcdata, sizeof(g_ccutohavcdata));
-	mem_copy(buf + 601, (U8*)&g_ccutoalldata, sizeof(g_ccutoalldata));
+	mem_copy(buf + 701, (U8 *)&g_havctoccudata, sizeof(g_havctoccudata));
+	mem_copy(buf + 501, (U8 *)&g_ccutohavcdata, sizeof(g_ccutohavcdata));
+	mem_copy(buf + 601, (U8 *)&g_ccutoalldata, sizeof(g_ccutoalldata));
 
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
-	return Tlen;//反馈长度
+	return Tlen; // 反馈长度
 }
-void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
+void StoreDeviceIOInfo(char *p, int len) // PTU强制->控制器
 {
-	U8* buf = (U8*)p;
+	U8 *buf = (U8 *)p;
 	int i;
 	// 强制控制器主机DI
 	for (i = 0; i < DI_NUM; i++)
@@ -370,7 +373,7 @@ void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
 	}
 
 	g_debug_var.var = Get32_LE(buf + 137);
-	if ((g_debug_var.var & 0x80000000) == 0) //PTU debug模式
+	if ((g_debug_var.var & 0x80000000) == 0) // PTU debug模式
 		g_debug_var.var = 0;
 
 	g_car.set1.Compressor_1.force_freq(GetBit8(buf[146], 0), Get16(buf + 164));
@@ -380,29 +383,26 @@ void StoreDeviceIOInfo(char* p, int len) //PTU强制->控制器
 	g_car.m_set1.m_EEV1.force_heat(GetBit8(buf[148], 0), Get16(buf + 184));
 	g_car.m_set1.m_EEV2.force_heat(GetBit8(buf[148], 1), Get16(buf + 186));
 
-	TXdata_cahce[0] = GetBit8(buf[148], 3);//PPV 强制lock 输出DO
+	TXdata_cahce[0] = GetBit8(buf[148], 3); // PPV 强制lock 输出DO
 	TXdata_cahce[1] = GetBit8(buf[148], 4);
 
-	if (GetBit8(buf[500], 0))//PTU上的TRDP数据任一lock的状态
+	if (GetBit8(buf[500], 0)) // PTU上的TRDP数据任一lock的状态
 	{
-		mem_copy((U8*)&g_havctoccudata, buf + 501, sizeof(g_havctoccudata));
-		mem_copy((U8*)&g_ccutoalldata, buf + 701, sizeof(g_havctoccudata));
+		mem_copy((U8 *)&g_havctoccudata, buf + 501, sizeof(g_havctoccudata));
+		mem_copy((U8 *)&g_ccutoalldata, buf + 701, sizeof(g_havctoccudata));
 	}
 
 	if (GetBit8(buf[600], 0))
 	{
-		mem_copy((U8*)&g_ccutohavcdata, buf + 601, sizeof(g_ccutohavcdata));
+		mem_copy((U8 *)&g_ccutohavcdata, buf + 601, sizeof(g_ccutohavcdata));
 	}
 }
 
-
 #endif
-
-
 
 void Reply_DeviceIdentifyInfoPacket(MAINTENANCE_BUS bus)
 {
-	U8* buf = (U8*)pMainTaincePacket;
+	U8 *buf = (U8 *)pMainTaincePacket;
 
 	buf[0] = 0xf5;
 	Set16(buf + 1, 19); // PUT_HVAC新的维护软件,包长度修改为两个字节了
@@ -425,26 +425,10 @@ void Reply_DeviceIdentifyInfoPacket(MAINTENANCE_BUS bus)
 
 void Reply_DeviceIOInfoPacket(MAINTENANCE_BUS bus)
 {
-	U8* buf = (U8*)pMainTaincePacket;
+	U8 *buf = (U8 *)pMainTaincePacket;
 
 	int Tlen = GetDeviceIOInfoPacket(buf, 2048);
 
 	if (Tlen > 0)
 		maintenance_send(bus, buf, Tlen);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

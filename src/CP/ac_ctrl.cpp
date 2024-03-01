@@ -19,20 +19,32 @@ void ACControl::Init()
 	set1.FreshAirDamp.DO_Close = DO_FAS_Close;
 
 	// 送风机1
+	set1.Ventilator_1.Fan_Type = 0;
 	set1.Ventilator_1.DO_run = DO_SAF1_Contactor;
 	set1.Ventilator_1.DI_feedback = DI_SAF1_Feedback;
+	set1.Ventilator_1.FanNumber = 1;
 
 	// 送风机2
+	set1.Ventilator_2.Fan_Type = 0;
 	set1.Ventilator_2.DO_run = DO_SAF2_Contactor;
 	set1.Ventilator_2.DI_feedback = DI_SAF2_Feedback;
+	set1.Ventilator_2.FanNumber = 2;
 
 	// 冷凝风机1
+	set1.Condenser1.Fan_Type = 1;
 	set1.Condenser1.DO_run = DO_CDF1_Contactor;
 	set1.Condenser1.DI_feedback = DI_CDF1_Feedback;
+	set1.Condenser1.FanNumber = 1;
+	set1.Condenser1.DO_Redundance_run = DO_CDF1_Redundance;
+	set1.Condenser1.DI_Redundance_Feedback = DI_CDF1_Redundance_Feedback;
 
 	// 冷凝风机2
+	set1.Condenser2.Fan_Type = 1;
 	set1.Condenser2.DO_run = DO_CDF2_Contactor;
 	set1.Condenser2.DI_feedback = DI_CDF2_Feedback;
+	set1.Condenser2.FanNumber = 2;
+	set1.Condenser2.DO_Redundance_run = DO_CDF2_Redundance;
+	set1.Condenser2.DI_Redundance_Feedback = DI_CDF2_Redundance_Feedback;
 
 	// 压缩机1
 	set1.Compressor_1.CompressorNumber = 1;
@@ -45,10 +57,12 @@ void ACControl::Init()
 	set1.Compressor_2.DI_feedback = DI_CP2_Feedback;
 
 	// 电加热1
+	set1.heater1.HeaterNumber = 1;
 	set1.heater1.DO_run = DO_HEATER1_Contactor;
 	set1.heater1.DI_feedback = DI_HEATER1_Feedback;
 
 	// 电加热2
+	set1.heater2.HeaterNumber = 2;
 	set1.heater2.DO_run = DO_HEATER2_Contactor;
 	set1.heater2.DI_feedback = DI_HEATER2_Feedback;
 
@@ -541,8 +555,8 @@ void ACControl::ToFullCool()
 
 		// 两个压缩机均故障
 	}
-	LOG_AC("压缩机1故障时间：%d\n", set1.Compressor_1.FaultTimer.getThisRunTime());
-	LOG_AC("压缩机2故障时间：%d\n", set1.Compressor_2.FaultTimer.getThisRunTime());
+	// LOG_AC("压缩机1故障时间：%d\n", set1.Compressor_1.FaultTimer.getThisRunTime());
+	// LOG_AC("压缩机2故障时间：%d\n", set1.Compressor_2.FaultTimer.getThisRunTime());
 
 	set1.Compressor_1.On();
 	if (TimeGap(set1.Compressor_1.timer.getOnTime()) < 2000)

@@ -2,47 +2,55 @@
 #define __AC_COMPRESSOR_H__
 #include "ac_include.h"
 
-//变频器故障枚举
-#define compressorLowPressureError 0x1		//低压故障
-#define compressorHighPressureError 0x2		//高压故障
-#define CompressorContactorError 0x4		//接触器故障
+// 变频器故障枚举
+#define compressorLowPressureError 0x1	// 低压故障
+#define compressorHighPressureError 0x2 // 高压故障
+#define CompressorContactorError 0x4	// 接触器故障
 
+
+#define MD_FREQ_FREQ 0x01  // 强制变频器频率标记位
+#define MD_FREQ_STATE 0x02 // 强制变频器工作状态标记位
 
 // 压缩机
 class Compressor
 {
 public:
 	U8 DI_feedback;
-	BOOL firstStart;		// 首次启动，最小频率，40hz，变频器，运行1分钟。如果上电就低频率运行会导致润滑不足
-	U8 DO_run;				// 压缩机控制输出位  (在DO中的位置)
-	U16 freq_HZ;			//变频器频率
-	U16 freq_State;			//变频器状态
-	S16 HighPressureValue; 	//高压传感器值
-	S16 LowPressureValue;  	//低压传感器值
-	U16 freq_Out;			//输出频率
-	U16 current_out;		//输出电流
-	U16 voltage_out;		//输出电压
-	// COMPRESSOR_ERROR_TYPE Error_type;	//压缩机故障类型
+	BOOL firstStart; // 首次启动，最小频率，40hz，变频器，运行1分钟。如果上电就低频率运行会导致润滑不足
+	U8 DO_run;		 // 压缩机控制输出位  (在DO中的位置)
+	U16 freq_HZ;	 // 变频器频率
+	U16 freq_State;	 // 变频器状态
+	U8 force_flag;
+	U16 freq_HZ_F;
+	U16 freq_State_F;
 	U8 Error_Flag;
-	U8 CompressorNumber;	//压缩机序号
-	U8 SetNumber;			//机组序号
-	U32 lastSetFrequencyTime;			//上次设置频率时间
-	S16 HP_Value;			//高压传感器值
-	S16 LP_Value;			//低压传感器值
-	BOOL HP_lock;			//高压锁死，未报故障，做逻辑判断用
-	BOOL LP_lock;			//低压锁死，未报故障，做逻辑判断用
-	U8 HP_trigger;			// 触发6次制冷系统高压压力异常预警
-	U8 LP_trigger;			// 触发6次制冷系统低压压力异常预警
+	U8 CompressorNumber;   // 压缩机序号
+	U8 SetNumber;		   // 机组序号
+
+	S16 HighPressureValue; // 高压传感器值
+	S16 LowPressureValue;  // 低压传感器值
+	U16 freq_Out;		   // 输出频率
+	U16 current_out;	   // 输出电流
+	U16 voltage_out;	   // 输出电压
+	// COMPRESSOR_ERROR_TYPE Error_type;	//压缩机故障类型
+	U32 lastSetFrequencyTime; // 上次设置频率时间
+	S16 HP_Value;			  // 高压传感器值
+	S16 LP_Value;			  // 低压传感器值
+	BOOL HP_lock;			  // 高压锁死，未报故障，做逻辑判断用
+	BOOL LP_lock;			  // 低压锁死，未报故障，做逻辑判断用
+	U8 HP_trigger;			  // 触发6次制冷系统高压压力异常预警
+	U8 LP_trigger;			  // 触发6次制冷系统低压压力异常预警
 	U32 HP_error_time;
-	U32 LP_error_time;		
+	U32 LP_error_time;
 	AC_TIMER timer;
 	AC_TIMER FaultTimer;
-
 
 public:
 	void setFreq(U16 HZ, BOOL Force);
 	U16 getFrequency();
 	U16 getFreqState();
+	void forceFrequency(BOOL b,U16 HZ);
+	void forceState(BOOL b, U16 state);
 	BOOL isOn();
 	void Off();
 	void On();
@@ -50,13 +58,8 @@ public:
 	BOOL isRun();
 	BOOL getErr();
 
-
 private:
-	const char* name;
-
-
+	const char *name;
 };
-
-
 
 #endif //__AC_COMPRESSOR_H__

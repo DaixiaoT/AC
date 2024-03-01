@@ -7,7 +7,7 @@ enum MAINTENANCE_BUS
 	MAINTENANCE_USB,
 	MAINTENANCE_NET,
 };
-
+#include "ac_da.h"
 #include "ac_ai.h"
 #include "trdp_udp.h"
 #include "ac_ctrl.h"
