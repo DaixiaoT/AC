@@ -51,7 +51,7 @@ BOOL Fan::isRun()
 BOOL Fan::getErr()
 {
 	Error_Flag &= 0x15;
-	if ((DI_STAT(DI_SAF1_State) == 0 && FanNumber == 1) || (DI_STAT(DI_SAF2_Feedback) == 0 && FanNumber == 2))
+	if ((DI_STAT(DI_SAF1_State) == 0 && FanNumber == 1 && Fan_Type == 0) || (DI_STAT(DI_SAF2_State) == 0 && FanNumber == 2 && Fan_Type == 0))
 	{
 		Error_Flag |= SupplyAirFanFeedbackError;
 	}
@@ -76,7 +76,7 @@ BOOL Fan::getErr()
 		Error_Flag &= (~CondenserFanContactorError);
 	}
 
-	if ((DI_STAT(DI_CDF1_Redundance_Feedback) == 0 && DO_STAT(DO_CDF1_Redundance) == 1 && FanNumber == 1) || (DI_STAT(DI_CDF2_Redundance_Feedback) == 0 && DO_STAT(DO_CDF2_Redundance) == 1 && FanNumber == 2))
+	if ((DI_STAT(DI_CDF1_Redundance_Feedback) == 0 && DO_STAT(DO_CDF1_Redundance) == 1 && FanNumber == 1 && Fan_Type == 1) || (DI_STAT(DI_CDF2_Redundance_Feedback) == 0 && DO_STAT(DO_CDF2_Redundance) == 1 && FanNumber == 2 && Fan_Type == 1))
 	{
 		Error_Flag |= CondenserFanRedundancyContactorError;
 	}

@@ -114,6 +114,58 @@ int GetDeviceIOInfoPacket(U8 *buf, int len)
 	Set32(buf + i, TimeGap(g_car.set1.heater2.timer.getOnTime()) / 1000);
 	i += 4;
 
+
+
+
+
+	
+	// Set16(buf + 158, g_car.set1.m_EEV1.EEV_value());
+	// Set16(buf + 160, g_car.m_set1.m_EEV2.EEV_value());
+	Set16(buf + 138, g_car.set1.Compressor_1.getFrequency());
+	Set16(buf + 154, g_car.set1.Compressor_1.getFreqState());
+	Set16(buf + 170, (g_car.set1.freq1_485module.Freqrx_data.SetOutFreq));
+	Set16(buf + 172, (g_car.set1.freq1_485module.Freqrx_data.InputVoltage));
+	// Set16(buf + 174, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.input_current));
+	// Set16(buf + 176, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.input_freq));
+	// Set16(buf + 178, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.Temp));
+	// Set16(buf + 180, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.out_freq));
+	// Set16(buf + 182, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.out_voltage));
+	// Set16(buf + 184, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.out_current));
+	// Set16(buf + 186, g_car.set1.m_freq1.Freqrx_data.work_state);
+	// Set16(buf + 188, EndianSwitch(g_car.set1.m_freq1.Freqrx_data.bus_voltage));
+
+	// Set16(buf + 190, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.set_outfreq));
+	// Set16(buf + 192, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.input_voltag));
+	// Set16(buf + 194, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.input_current));
+	// Set16(buf + 196, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.input_freq));
+	// Set16(buf + 198, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.Temp));
+	// Set16(buf + 200, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.out_freq));
+	// Set16(buf + 202, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.out_voltage));
+	// Set16(buf + 204, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.out_current));
+	// Set16(buf + 206, g_car.set1.m_freq2.Freqrx_data.work_state);
+	// Set16(buf + 208, EndianSwitch(g_car.set1.m_freq2.Freqrx_data.bus_voltage));
+
+	// Set16(buf + 210, EndianSwitch(g_car.set1.m_valve1.valverx_data.MorkState));
+	// Set16(buf + 212, g_car.set1.m_valve1.valverx_data.ValveState);
+	// Set16(buf + 214, g_car.set1.m_valve1.valverx_data.valve_warn);
+	// Set16(buf + 216, EndianSwitch(g_car.set1.m_valve1.valverx_data.superheat));
+	// Set16(buf + 218, EndianSwitch(g_car.set1.m_valve1.valverx_data.saturation));
+	// Set16(buf + 220, EndianSwitch(g_car.set1.m_valve1.valverx_data.pressure));
+	// Set16(buf + 222, EndianSwitch(g_car.set1.m_valve1.valverx_data.Temp));
+	// Set16(buf + 224, EndianSwitch(g_car.set1.m_valve1.valverx_data.TValve_apetrture));
+
+	// Set16(buf + 226, EndianSwitch(g_car.set1.m_valve2.valverx_data.MorkState));
+	// Set16(buf + 228, g_car.set1.m_valve2.valverx_data.ValveState);
+	// Set16(buf + 230, g_car.set1.m_valve2.valverx_data.valve_warn);
+	// Set16(buf + 232, EndianSwitch(g_car.set1.m_valve2.valverx_data.superheat));
+	// Set16(buf + 234, EndianSwitch(g_car.set1.m_valve2.valverx_data.saturation));
+	// Set16(buf + 236, EndianSwitch(g_car.set1.m_valve2.valverx_data.pressure));
+	// Set16(buf + 238, EndianSwitch(g_car.set1.m_valve2.valverx_data.Temp));
+	// Set16(buf + 240, EndianSwitch(g_car.set1.m_valve2.valverx_data.TValve_apetrture));
+
+
+
+
 	buf[Tlen - 1] = GetParity(buf, Tlen - 1);
 	return Tlen;
 }
@@ -132,7 +184,7 @@ void StoreDeviceIOInfo(char *p, int len)
 	g_car.set1.Compressor_2.forceFrequency(GetBit8(buf[146], 1), Get16(buf + 166));
 	g_car.set1.Compressor_1.forceState(GetBit8(buf[147], 0), Get16(buf + 180));
 	g_car.set1.Compressor_2.forceState(GetBit8(buf[147], 1), Get16(buf + 182));
-	
+
 	g_debug_var.var = Get32_LE(buf + 137);
 }
 #else

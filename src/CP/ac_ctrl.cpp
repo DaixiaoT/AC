@@ -466,6 +466,8 @@ void ACControl::ToFullCool()
 	coolingTimer.Start();
 	LOG_AC("\nÈ«ÀäÄ£Ê½\n");
 	ctrlMode = SET_FULL_COOL;
+	BOOL ventilator1Err = set1.Ventilator_1.getErr();
+	BOOL ventilator2Err = set1.Ventilator_2.getErr();
 	BOOL condenser1Err = set1.Condenser1.getErr();
 	BOOL condenser2Err = set1.Condenser2.getErr();
 	BOOL compressor1Err = set1.Compressor_1.getErr();
@@ -564,6 +566,8 @@ void ACControl::ToFullCool()
 		return;
 	}
 	set1.Compressor_2.On();
+	set1.Compressor_1.setFreq(6000, FALSE);
+	set1.Compressor_2.setFreq(6000, FALSE);
 }
 
 void ACControl::ToAuto()

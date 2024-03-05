@@ -5,7 +5,7 @@
 extern U32 g_down_log_tick;
 
 
-
+BOOL ac_get_record(AC_ERR_Record *f);
 
 
 

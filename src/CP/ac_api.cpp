@@ -2,7 +2,7 @@
 #include "ac_api.h"
 #include "ac_ctrl.h"
 #include "ac_ai.h"
-#include "ex_module485.h"
+#include "485/485_module.h"
 #include "trdp_app.h"
 #include "ptu/ptu_monitor.h"
 #include "ac_config.h"
@@ -62,14 +62,13 @@ void ac_control(U32 run_sec)
 		LOG_AC("运行数据存入铁电\n");
 	}
 	s_time = sys_time();
-	g_car.ProcessMode();
+	
 	//故障记录存储
 	//运行记录存储
-	//if (ac_get_record(&g_err_record))	  // 故障记录存储
-	//    ac_err_log_record(&g_err_record); //!!!!
+	if (ac_get_record(&g_err_record))	  // 故障记录存储
+	   ac_err_log_record(&g_err_record); //!!!!
 	save_run_log();						  // 运行记录存储
-	ac_err_log_record(&g_err_record);
-	// s_time=sys_time();
+	g_car.ProcessMode();
 	if(TimeGap(s_now_time)>30*60*1000){
 		g_car.FirstStartFlag=0;
 	}
@@ -176,7 +175,7 @@ void ac_ModbusDataSwitch()
 //更新传感器数据
 void Up_my_sensor()
 {
-	DA_Update(g_car.set1.Ventilator_1.getSpeed(), g_car.set1.Ventilator_2.getSpeed());
+	DA_Update(g_car.set1.Ventilator_1.getSpeed(), g_car.set1.Ventilator_2.getSpeed());//送风机风速设置
 	g_car.set1.FreshAirDamp.resistor_feedback = U1_RD_F1();
 
 	g_car.set1.Compressor_1.HighPressureValue = U1HP1();

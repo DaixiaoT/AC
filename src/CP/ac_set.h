@@ -5,7 +5,12 @@
 #include "ac_damp.h"
 #include "ac_fan.h"
 #include "ac_compressor.h"
-#include "ex_module485.h"
+
+
+#include "485/485_freq.h"
+#include "485/485_valve.h"
+
+
 #include "ac_heat.h"
 class ACSet
 {
